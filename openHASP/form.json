@@ -4,6 +4,16 @@
 			"type": "ValidationTextBox",
 			"name": "Hostname",
 			"caption": "Hostname"
+		},
+		{
+			"type": "CheckBox",
+			"name": "AutoDisplayBacklight",
+			"caption": "Auto Display Backlight"
+		},
+		{
+			"type": "CheckBox",
+			"name": "AutoCreateVariable",
+			"caption": "Auto Create Variables"
 		}
 	],
 	"actions": [

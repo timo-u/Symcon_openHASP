@@ -1,5 +1,5 @@
 # openHASP
-Beschreibung des Moduls.
+Das Modul stellt die Verbinung mit einem openHASP-Display über MQTT bereit. 
 
 ### Inhaltsverzeichnis
 
@@ -17,8 +17,8 @@ die Instanz openHASP verbidet sich mit einem openHASP Display via MQTT
 
 ### 2. Voraussetzungen
 
-- IP-Symcon ab Version 6.
-- openHASP-Display
+- IP-Symcon ab Version 6.0
+- openHASP-Display [openHASP](https://openhasp.com/)
 
 ### 3. Software-Installation
 
@@ -35,7 +35,8 @@ __Konfigurationsseite__:
 Name     | Beschreibung
 -------- | ------------------
 Hostname | Name des Displays zur Identifikation
-         |
+Automatische Hintergrundbeleuchtung | Schaltet die Beleuchtung im Leerlauf automatisch ab
+Variablen automatisch erstellen | Dadurch werden die Variablen zu Ereignissen und Variablen automatisch erstellt. 
 
 ### 5. Statusvariablen und Profile
 
@@ -45,6 +46,10 @@ Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzeln
 
 Name   | Typ     | Beschreibung
 ------ | ------- | ------------
+Leerlauf | Integer | Zeigt den Leerlaufzustand an 
+Hintergrundbeleuchtung |Integer | Wert der Hintergrundbeleuchtung (Kann geschaltet werden)
+Seite  |Integer | Aktuell aufgerufenen Seite (Kann geschaltet werden)
+Online| Boolean | Online Status
        |         |
        |         |
 
@@ -52,12 +57,13 @@ Name   | Typ     | Beschreibung
 
 Name   | Typ
 ------ | -------
-       |
-       |
+OpenHASP.Idle  | Integer
+OpenHASP.BtnEvent | Integer
+OpenHASP.Online | Boolean
 
 ### 6. WebFront
 
-Die Funktionalität, die das Modul im WebFront bietet.
+z.Z. Keine 
 
 ### 7. PHP-Befehlsreferenz
 

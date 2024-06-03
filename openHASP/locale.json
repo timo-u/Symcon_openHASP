@@ -2,7 +2,24 @@
     "translations": {
         "de": {
             "Hostname": "Gerätename",
-            "Translation 2": "Übersetzung 2"
+            "Auto Display Backlight": "Automatische Hintergrundbeleuchtung",
+            "Auto Create Variables": "Variablen automatisch erstellen",
+            "Restart": "Neustart",
+            "Idle": "Leerlauf",
+            "Backlight": "Hintergrundbeleuchtung",
+            "Page": "Seite",
+            "Event": "Ereignis",
+            "Value": "Wert",
+            "Text": "Text",
+            "Color": "Farbe",
+            "Off": "Aus",
+            "Short": "Kurz",
+            "Long": "Lang",
+			"Up": "Hoch",
+			"Down": "Runter",
+            "Hold": "Gedrückt",
+            "Release": "Losgelassen",
+            "Changed": "Geändert"
         }
     }
 }
