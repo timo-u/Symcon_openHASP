@@ -1,0 +1,17 @@
+{
+	"elements": [
+		{
+			"type": "ValidationTextBox",
+			"name": "Hostname",
+			"caption": "Hostname"
+		}
+	],
+	"actions": [
+		{
+			"type": "Button",
+			"label": "Restart",
+			"onClick": "OHASP_Restart($id);"
+		}
+	],
+	"status": []
+}

@@ -1,2 +1,5 @@
-# Symcon_openHASP
-openHASP Implementierung für IP-Symcon
+# openHASP
+
+Folgende Module beinhaltet das openHASP Repository:
+
+- __openHASP__ ([Dokumentation](openHASP))  
