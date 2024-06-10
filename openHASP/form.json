@@ -7,20 +7,111 @@
 		},
 		{
 			"type": "CheckBox",
-			"name": "AutoDisplayBacklight",
-			"caption": "Auto Display Backlight"
+			"name": "AutoDimBacklight",
+			"caption": "Auto Dim Backlight"
+		},
+		{
+			"type": "CheckBox",
+			"name": "AutoShutdownBacklight",
+			"caption": "Auto Shutdow Backlight"
 		},
 		{
 			"type": "CheckBox",
 			"name": "AutoCreateVariable",
 			"caption": "Auto Create Variables"
-		}
+		},
+		{
+			"type": "CheckBox",
+			"name": "WriteDisplayContent",
+			"caption": "Write Display Content"
+		},
+		{
+            "type": "List",
+            "name": "UiElements",
+            "caption": "Ui-Elements",
+            "rowCount": 10,
+            "add": true,
+            "delete": true,
+			"changeOrder":true,
+            "columns": [{
+                "caption": "Type",
+                "name": "Type",
+                "width": "150px",
+                "save": true,
+                "visible": true,
+				"add":0,
+				"edit": {
+					"type": "Select",
+					"options": [
+						{ "caption": "Label", "value": 0 },
+						{ "caption": "Button", "value": 1 },
+						{ "caption": "Toggle Button", "value": 2 },
+						{ "caption": "Slider", "value": 3 }
+					]
+				}
+            },{
+                "caption": "Caption",
+                "name": "Caption",
+                "width": "200px",
+                "save": true,
+                "visible": true,
+				"add":"",
+				"edit": {
+					"type": "ValidationTextBox"
+				}
+            },{
+                "caption": "Override Parameter",
+                "name": "OverrideParameter",
+                "width": "200px",
+                "save": true,
+                "visible": true,
+				"add":"{}",
+				"edit": {
+					"type": "ValidationTextBox"
+				}
+            },{
+                "caption": "Margin",
+                "name": "Margin",
+                "width": "100px",
+                "save": true,
+                "visible": true,
+				"add":10,
+				"edit": {
+					"type": "NumberSpinner"
+				}
+            },{
+                "caption": "Object",
+                "name": "Object",
+                "width": "200px",
+                "save": true,
+                "visible": true,
+				"add":1,
+				"edit": {
+					"type": "SelectObject"
+				}
+            }]
+        },
+		{
+			"type": "CheckBox",
+			"name": "DisplayDateTimeHeader",
+			"caption": "Display Date+Time Header"
+		},
+		{
+			"type": "CheckBox",
+			"name": "DisplayPageControlFooter",
+			"caption": "Display Page Control Footer"
+		}     
 	],
 	"actions": [
 		{
 			"type": "Button",
 			"label": "Restart",
 			"onClick": "OHASP_Restart($id);"
+		},
+		{
+			"type": "Button",
+			"label": "Rewrite Display",
+			"onClick": "OHASP_RewriteDisplay($id);"
 		}
 	],
 	"status": []
