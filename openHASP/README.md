@@ -101,32 +101,32 @@ z.Z. Keine
 
 ### 7. PHP-Befehlsreferenz
 
-`boolean OHASP_Restart(integer $InstanzID);`
+`boolean OHASP_Restart(integer $InstanzID);`\
 Die Funktion startet das Display neu. 
 
 Beispiel:
 `OHASP_Restart(12345);`
+<br/><br/>
 
-
-`boolean SendCommand(integer $InstanzID, string $Command);`
+`boolean SendCommand(integer $InstanzID, string $Command);`\
 Senden eines Kommandos an das Display
 
 Beispiel:
 `SendCommand(12345,'restart');`
+<br/><br/>
 
-
-`boolean SetItemText(integer $InstanzID, int $page, int $objectId, string $value);
+`boolean SetItemText(integer $InstanzID, int $page, int $objectId, string $value);`\
 Setzt den Text eines UI-Elements
 
 Beispiel:
 `SetItemText(12345,1,5,'Licht Aus');`
+<br/><br/>
 
-
-`boolean SetItemValue(integer $InstanzID, int $page, int $objectId, int $value);`
+`boolean SetItemValue(integer $InstanzID, int $page, int $objectId, int $value);`\
 Setzt den Wert eines Toggel Buttons oder Sliders
 
 Beispiel Slider auf 50:
-`SetItemValue(12345,1,5,50);`\
+`SetItemValue(12345,1,5,50);`
 
 Beispiel Toggel Button auf "Ein":
 `SetItemValue(12345,1,5,intval(true));`
