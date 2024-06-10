@@ -39,15 +39,15 @@ Hintergrundbeleuchtung automatisch dimmen | Dimmt die Beleuchtung im kurzen Leer
 Hintergrundbeleuchtung automatisch abschalten| Schaltet die Beleuchtung im Leerlauf (idle->long) automatisch ab
 Variablen automatisch erstellen | Dadurch werden die Variablen zu Ereignissen und Variablen automatisch erstellt. 
 Display Inhalt schreiben | Entfernt die Elemente auf dem Display und erstellt die nachfolgen UI_Elemente selbstständig. 
-Ui-Elemente | Lsite aus Elementen, die auf dem Displayangezeigt werden sollen. 
-Datum und Uhrzeit im Header anzeigen | Blendet auf allen Seiten das Datum und die Uhrzeit an
-Buttons zum Umblättern anzeigen | Blendet die Buttons zum Umblättern am unteren Bildrand anzeigen. 
+Ui-Elemente | Liste aus Elementen, die auf dem Displayangezeigt werden sollen. 
+Datum und Uhrzeit im Header anzeigen | Blendet auf allen Seiten das Datum und die Uhrzeit ein
+Buttons zum Umblättern anzeigen | Blendet die Buttons zum Umblättern am unteren Bildrand ein. 
 
 
 __Ui-Elemente__:
 
 #### Typ
-Legt den Typ des UI-Elements fest, der angezeigt werden soll 
+Legt den Typ des UI-Elements fest, der angezeigt werden soll.
 
 #### Beschriftung
 Setzt die beschriftung des Labels oder des Buttons. 
@@ -122,11 +122,11 @@ Beispiel:
 `SetItemText(12345,1,5,'Licht Aus');`
 
 
-`boolean SetItemValue(integer $InstanzID, int $page, int $objectId, int $value);
+`boolean SetItemValue(integer $InstanzID, int $page, int $objectId, int $value);`
 Setzt den Wert eines Toggel Buttons oder Sliders
 
 Beispiel Slider auf 50:
-`SetItemValue(12345,1,5,50);`
+`SetItemValue(12345,1,5,50);`\
 
 Beispiel Toggel Button auf "Ein":
 `SetItemValue(12345,1,5,intval(true));`
