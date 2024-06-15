@@ -80,6 +80,26 @@
 					"type": "NumberSpinner"
 				}
             },{
+                "caption": "Width",
+                "name": "Width",
+                "width": "100px",
+                "save": true,
+                "visible": true,
+				"add":12,
+				"edit": {
+					"type": "Select",
+					"options": [
+						{ "caption": "1/1", "value": 12 },
+						{ "caption": "5/6", "value": 10 },
+						{ "caption": "3/4", "value": 9 },
+						{ "caption": "2/3", "value": 8 },
+						{ "caption": "1/2", "value": 6 },
+						{ "caption": "1/3", "value": 4 },
+						{ "caption": "1/4", "value": 3 },
+						{ "caption": "1/6", "value": 2 }
+					]
+				}
+            },{
                 "caption": "Object",
                 "name": "Object",
                 "width": "200px",
@@ -100,7 +120,75 @@
 			"type": "CheckBox",
 			"name": "DisplayPageControlFooter",
 			"caption": "Display Page Control Footer"
-		}     
+		},
+		{
+            "type": "List",
+            "name": "Parameter",
+            "caption": "Parameter",
+            "rowCount": 10,
+            "add": false,
+            "delete": false,
+			"sort": {
+            "column": "Name",
+            "direction": "ascending"
+			},
+            "columns": [{
+                "caption": "Name",
+                "name": "Name",
+                "width": "200px",
+                "save": true,
+                "visible": true
+            },{
+                "caption": "Value",
+                "name": "Value",
+                "width": "200px",
+                "save": true,
+                "visible": true,
+				"add":"",
+				"edit": {
+					"type": "NumberSpinner"
+				}
+            }],
+			"values": [
+            {
+                "Name": "DisplayHeight",
+                "Value": 480
+            },
+            {
+                "Name": "DisplayWidth",
+                "Value": 480
+            },
+            {
+                "Name": "MarginSide",
+                "Value": 10
+            },
+            {
+                "Name": "LabelHeight",
+                "Value": 40
+            },
+            {
+                "Name": "SliderHeight",
+                "Value": 30
+            },
+            {
+                "Name": "ButtonHeight",
+                "Value": 60
+            },
+            {
+                "Name": "DisplayMarginTop",
+                "Value": 0
+            },
+            {
+                "Name": "DisplayMarginBottom",
+                "Value": 0
+            },
+            {
+                "Name": "SliderMargin",
+                "Value": 10
+            }
+			
+        ]
+        }
 	],
 	"actions": [
 		{
@@ -112,7 +200,8 @@
 			"type": "Button",
 			"label": "Rewrite Display",
 			"onClick": "OHASP_RewriteDisplay($id);"
-		}
+		},
+		{ "type": "Label", "caption": "Dokumentation: https://github.com/timo-u/Symcon_openHASP/tree/main/openHASP" }
 	],
 	"status": []
 }

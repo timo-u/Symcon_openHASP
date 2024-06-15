@@ -13,19 +13,16 @@ class openHASP extends IPSModule
         $this->RegisterPropertyBoolean('AutoDimBacklight', false);
 		$this->RegisterPropertyBoolean('AutoShutdownBacklight', false);
         $this->RegisterPropertyBoolean('AutoCreateVariable', false);
-
-
+		
         $this->RegisterPropertyBoolean('WriteDisplayContent', false);
         $this->RegisterPropertyString('UiElements', "");
+		$this->RegisterPropertyString('Parameter', "");
         $this->RegisterPropertyBoolean('DisplayDateTimeHeader', true);
         $this->RegisterPropertyBoolean('DisplayPageControlFooter', true);
 		
 		$this->RegisterAttributeString("ElementToObjectMapping", "{}"); 
 
         $this->ConnectParent('{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}'); //Automatisch mit der MQTT-Server Instanz verbiden
-
-
-
 
     }
 
@@ -147,9 +144,21 @@ class openHASP extends IPSModule
                 "Object" => 1
             );
         }
-
-
-        return json_encode($data);
+		
+			 
+		/*
+		$data->elements[8]->values= array();
+		$data->elements[8]->values[] =array("Name" => "DisplayHeight","Value"=>480);
+		$data->elements[8]->values[] =array("Name" => "DisplayWidth","Value"=>480);
+		$data->elements[8]->values[] =array("Name" => "MarginSide","Value"=>10);
+		$data->elements[8]->values[] =array("Name" => "LabelHeight","Value"=>40);
+		$data->elements[8]->values[] =array("Name" => "SliderHeight","Value"=>30);
+		$data->elements[8]->values[] =array("Name" => "ButtonHeight","Value"=>60);
+		$data->elements[8]->values[] =array("Name" => "DisplayMarginTop","Value"=>0);
+		$data->elements[8]->values[] =array("Name" => "DisplayMarginBottom","Value"=>0);
+        */
+		
+		return json_encode($data);
 
     }
     //Ab PHP 8.3 ist die Funktion bestandteil von PHP
@@ -160,6 +169,19 @@ class openHASP extends IPSModule
         return json_last_error() === JSON_ERROR_NONE;
     }
 
+	private function GetParameter(string $parametername)
+	{
+		$Parameter = json_decode($this->ReadPropertyString("Parameter"));
+		$found_key = array_search($parametername, array_column($Parameter, 'Name'));
+		$Value = $Parameter[$found_key]->Value;
+		$this->SendDebug('GetParameter()', $Parameter[$found_key]->Name .' => ' . $Value ,0);
+		return $Value;
+		
+	}
+	
+	
+	
+	
     private function Maintain()
     {
         $this->MaintainVariable('Online', $this->Translate('Online'), 0, 'OpenHASP.Online', 1, true);
@@ -421,19 +443,24 @@ class openHASP extends IPSModule
         if(!$this->ReadPropertyBoolean('WriteDisplayContent')) {
             return;
         }
+		 
+        $displayheight = $this->GetParameter("DisplayHeight");
+        $displaywidth = $this->GetParameter("DisplayWidth");
+        $margin = $this->GetParameter("MarginSide");
+        $labelHeight = $this->GetParameter("LabelHeight");
+        $sliderHeigh = $this->GetParameter("SliderHeight");
+        $buttonHeight =$this->GetParameter("ButtonHeight");
+		$SliderMargin = $this->GetParameter("SliderMargin");
 		
-        $displayheight = 480;
-        $displaywidth = 480;
-        $margin = 10;
-        $labelHeight = 40;
-        $sliderHeigh = 30;
-        $buttonHeight = 70;
-
+		$DisplayMarginTop = $this->GetParameter("DisplayMarginTop");
+		$DisplayMarginBottom = $this->GetParameter("DisplayMarginBottom");
+		
         $oneElementwidth = $displaywidth - (2 * $margin);
         $twoElementwidth = ($displaywidth - (3 * $margin)) / 2;
-        $yStart = 0;
-        $yStop = $displayheight;
+        $yStart = $DisplayMarginTop;
+        $yStop = $displayheight-$DisplayMarginBottom;
         $page = 1;
+		$offset =0; 
 
         $this->SendCommand('clearpage all');
 
@@ -501,11 +528,51 @@ class openHASP extends IPSModule
         $itemcount = 1;
         $y = $yStart;
 		$items=array();
+		$yend=0; 
+		$x=$margin;
 	
         foreach ($UiElements as &$element) {
             $this->SendDebug('RewriteDisplay()', 'Caption: '.print_r($element, true), 0);
+		
 			
+			switch($element['Width']) {
+            case 12:	// 	voll
+				$elementWidth= $displaywidth - (2 * $margin);
+                break;
+			 case 10: //	5/6
+                $elementWidth = ($displaywidth - (2 * $margin))/6*5;
+                break;	
+            case 9: //	3/4
+                $elementWidth = ($displaywidth - (2 * $margin))/4*3;
+                break;
+            case 8:// 	2/3
+                $elementWidth = ($displaywidth - (1 * $margin))/3*2;
+                break;
+            case 6: //	1/2
+                $elementWidth = ($displaywidth - (3 * $margin))/2;
+                break;
+            case 4: //	1/3
+                $elementWidth = ($displaywidth - (4 * $margin))/3;
+                break;
+            case 3:	// 	1/4
+                $elementWidth = ($displaywidth - (5 * $margin))/4;
+                break;
+			case 2:	// 	1/6
+                $elementWidth = ($displaywidth - (7 * $margin))/6;
+                break;	
+			default:
+				$elementWidth= ($displaywidth - (2 * $margin));
+			}	
 			
+			if($x+$elementWidth<=$displaywidth)
+			{
+				
+			}
+			else
+			{
+				$y = $y + $offset; // Wenn neue Zeile dann Offset Margin + Elementhöhe zu Y adieren.
+				$x=$margin; // links beginnen
+			}
 			
             try {
                 $override = json_decode($element['OverrideParameter'], true);
@@ -527,15 +594,23 @@ class openHASP extends IPSModule
                 $array = array(		'obj' => 'label',
                                     'page' => $page,
                                     'id' => $itemcount,
-                                    'x' => $margin,
+                                    'x' => $x,
                                     'y' => $y,
                                     'h' => $h,
-                                    'w' => $oneElementwidth,
+                                    'w' => $elementWidth,
                                     'text' => $element['Caption'],
                                     'align' => 1);
 				if($element['Object']!=1)
 				{
-				$array['text']=GetValue($element['Object']);
+					if($element['Caption'] == "")
+					{
+				
+						$array['text']=strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben. 
+					}
+					else
+					{
+						$array['text']=sprintf($element['Caption'] ,GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben 
+					}
 				}					
 							
                 $this->AddJsonL(array_merge($array, $override));
@@ -549,10 +624,10 @@ class openHASP extends IPSModule
                 $array = array(	'obj' => 'btn',
                                     'page' => $page,
                                     'id' => $itemcount,
-                                    'x' => $margin,
+                                    'x' => $x,
                                     'y' => $y,
                                     'h' => $h,
-                                    'w' => $oneElementwidth,
+                                    'w' => $elementWidth,
                                     'toggle' => ($element['Type'] == 2),
                                     'text' => $element['Caption'],
                                     'align' => 1);
@@ -566,7 +641,8 @@ class openHASP extends IPSModule
             }
 
             if($element['Type'] == 3) { //Slider
-                if($y + $sliderHeigh > $yStop) {
+			
+                if($y + $sliderHeigh + $SliderMargin > $yStop) {
                     $y = $yStart;
                     $page++;
                 }
@@ -576,23 +652,28 @@ class openHASP extends IPSModule
                 $array = array(	'obj' => 'slider',
                                     'page' => $page,
                                     'id' => $itemcount,
-                                    'x' => $margin,
-                                    'y' => $y,
+                                    'x' => $x,
+                                    'y' => $y+$SliderMargin,
                                     'h' => $h,
-                                    'w' => $oneElementwidth
+                                    'w' => $elementWidth
                                     );
 				if($element['Object']!=1)
 				{
 					$array['val']=GetValue($element['Object']);
 				}
                 $this->AddJsonL(array_merge($array, $override));
-                $y = $y + $margin; // zusätzlcher Abstand nach Slider
+                $y = $y + $SliderMargin; // zusätzlcher Abstand nach Slider
             }
 
 			$items[] = Array("objkey"=>"p".$page."b".$itemcount , "data"=>  Array("page"=>$page,"id"=>$itemcount,"type"=>$element['Type'],"objectId"=>$element['Object'],"caption"=>$element['Caption']));
 
             $itemcount++;
-            $y = $y + $h + $element['Margin'];
+			
+			
+            $x = $x+$elementWidth + $margin;
+		
+			$offset = $h + $element['Margin'];
+			
         }
 		
 		$this->SendDebug('SendCommand()', 'ElementToObjectMapping: '.json_encode($items), 0);
