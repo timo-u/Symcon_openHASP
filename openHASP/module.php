@@ -136,7 +136,7 @@ class openHASP extends IPSModule
 
         //Only add default element if we do not have anything in persistence
         if($UiElements == "" || $UiElements == "[]") {
-            $data->elements[4]->values[] = array(
+            $data->elements[1]->values[] = array(
                 "Type" => 0,
                 "Caption" => "#32C9AC Symcon",
                 "OverrideParameter" => '{"text_font":50,"h":60}',
@@ -144,19 +144,6 @@ class openHASP extends IPSModule
                 "Object" => 1
             );
         }
-		
-			 
-		/*
-		$data->elements[8]->values= array();
-		$data->elements[8]->values[] =array("Name" => "DisplayHeight","Value"=>480);
-		$data->elements[8]->values[] =array("Name" => "DisplayWidth","Value"=>480);
-		$data->elements[8]->values[] =array("Name" => "MarginSide","Value"=>10);
-		$data->elements[8]->values[] =array("Name" => "LabelHeight","Value"=>40);
-		$data->elements[8]->values[] =array("Name" => "SliderHeight","Value"=>30);
-		$data->elements[8]->values[] =array("Name" => "ButtonHeight","Value"=>60);
-		$data->elements[8]->values[] =array("Name" => "DisplayMarginTop","Value"=>0);
-		$data->elements[8]->values[] =array("Name" => "DisplayMarginBottom","Value"=>0);
-        */
 		
 		return json_encode($data);
 
@@ -662,7 +649,7 @@ class openHASP extends IPSModule
 					$array['val']=GetValue($element['Object']);
 				}
                 $this->AddJsonL(array_merge($array, $override));
-                $y = $y + $SliderMargin; // zusätzlcher Abstand nach Slider
+                $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
             }
 
 			$items[] = Array("objkey"=>"p".$page."b".$itemcount , "data"=>  Array("page"=>$page,"id"=>$itemcount,"type"=>$element['Type'],"objectId"=>$element['Object'],"caption"=>$element['Caption']));

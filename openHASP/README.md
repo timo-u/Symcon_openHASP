@@ -40,7 +40,7 @@ Hintergrundbeleuchtung automatisch abschalten| Schaltet die Beleuchtung im Leerl
 Variablen automatisch erstellen | Dadurch werden die Variablen zu Ereignissen und Variablen automatisch erstellt. 
 Display Inhalt schreiben | Entfernt die Elemente auf dem Display und erstellt die nachfolgen UI_Elemente selbstständig. 
 Ui-Elemente | Liste aus Elementen, die auf dem Displayangezeigt werden sollen. 
-Datum und Uhrzeit im Header anzeigen | Blendet auf allen Seiten das Datum und die Uhrzeit ein
+Datum und Uhrzeit im Header anzeigen | Blendet auf allen Seiten das Datum und die Uhrzeit ein 
 Buttons zum Umblättern anzeigen | Blendet die Buttons zum Umblättern am unteren Bildrand ein. 
 
 
@@ -62,6 +62,10 @@ Setzt die beschriftung des Labels oder des Buttons.
 Der Abstand zum Beginn des unteren Objekts.
 Der Abstand kann auch negativ sein, um das nachfolgene Objekt auf die gleiche Höhe zu bringen. 
 
+#### Breite 
+Setzt die relative Breite des Objekts. Wenn zwei Objekte in eine Zeile passen werden sie hientereinander dargestellt. 
+Beispiel: zwei Elemente mit der Breite 1/2, vier Elemente mit 1/4 oder 2 Elemente mit 1/4 und ein Element mit 1/2
+
 #### Objekt 
 Der Objekttyp ist abhängig vom ausgewählten Typ des UI-Elements! 
 
@@ -71,6 +75,21 @@ Label | String, Integer, Float  | die Beschriftung kann Variablen nutzen. z.B. '
 Button | Skript  | Das Script wird beim Drücken des Buttons ausgeführt 
 Toggel Button | Boolean  | Der Wert wird sofern vorhanden über eine RequestAction geschaltet. Sofern keine RequestAction verfügbar ist wird die Variable direkt geschaltet. 
 Slider | Integer  | Die Min- und Max-Werte werden über "Parameter überschreiben" gesetzt 
+
+__Parameter__:
+Name | Standardwert | Beschreibung
+--------  | ------------------| ------------------
+DisplayHeight | 480| Höhe des Displays in Pixeln
+DisplayWidth | 480 |Breite des Displays in Pixeln
+DisplayMarginTop | 0 | Oberer Rand für eigene Header-Leiste
+DisplayMarginBottom | 0 | Unteret Rand für eigene Footer-Leiste
+MarginSide | 10 | Rand seitlich der UI-Elemente und zwischen den Elementen
+ButtonHeight | 60 | Standardhöhe der Buttons
+LabelHeight | 40 | Standardhöhe der Label 
+SliderHeight | 30 | Standardhöhe der Slider 
+SliderMargin | 10 | Zusätzlicher Rand unterhalb und oberhalb des Sliders um diesen mittig an andere Elemente anzupassen.
+
+
 
 
 ### 5. Statusvariablen und Profile
@@ -111,8 +130,12 @@ Beispiel:
 `boolean SendCommand(integer $InstanzID, string $Command);`\
 Senden eines Kommandos an das Display
 
-Beispiel:
-`SendCommand(12345,'restart');`
+Beispiel - Hintergrundbeleuchtung einschalten:
+`SendCommand(12345,'backlight=255');`
+
+Beispiel - Starten des LCD-Einbrennschutz:
+`SendCommand(12345,'antiburn=1');`
+
 <br/><br/>
 
 `boolean SetItemText(integer $InstanzID, int $page, int $objectId, string $value);`\
@@ -125,9 +148,16 @@ Beispiel:
 `boolean SetItemValue(integer $InstanzID, int $page, int $objectId, int $value);`\
 Setzt den Wert eines Toggel Buttons oder Sliders
 
-Beispiel Slider auf 50:
+Beispiel - Slider auf 50:
 `SetItemValue(12345,1,5,50);`
 
-Beispiel Toggel Button auf "Ein":
+Beispiel - Toggel Button auf "Ein":
 `SetItemValue(12345,1,5,intval(true));`
+<br/><br/>
 
+`boolean OHASP_RewriteDisplay(integer $InstanzID);`\
+Schreibt den Inhalt des aus Symcon erstellten Inhalts neu. (Nur wenn "Display Inhalt schreiben" aktiviert ist) n
+
+Beispiel:
+`OHASP_RewriteDisplay(12345);`
+<br/><br/>

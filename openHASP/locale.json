@@ -30,7 +30,9 @@
 			"Down": "Runter",
             "Hold": "Gedrückt",
             "Release": "Losgelassen",
-            "Changed": "Geändert"
+            "Changed": "Geändert",
+            "DisplayHeight": "Display Höhe",
+            "Width": "Breite"
         }
     }
 }

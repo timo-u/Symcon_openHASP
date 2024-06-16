@@ -6,26 +6,6 @@
 			"caption": "Hostname"
 		},
 		{
-			"type": "CheckBox",
-			"name": "AutoDimBacklight",
-			"caption": "Auto Dim Backlight"
-		},
-		{
-			"type": "CheckBox",
-			"name": "AutoShutdownBacklight",
-			"caption": "Auto Shutdow Backlight"
-		},
-		{
-			"type": "CheckBox",
-			"name": "AutoCreateVariable",
-			"caption": "Auto Create Variables"
-		},
-		{
-			"type": "CheckBox",
-			"name": "WriteDisplayContent",
-			"caption": "Write Display Content"
-		},
-		{
             "type": "List",
             "name": "UiElements",
             "caption": "Ui-Elements",
@@ -111,6 +91,31 @@
 				}
             }]
         },
+
+		{
+			"type": "ExpansionPanel",
+            "caption": "Weitere Einstellungen",
+            "items": [
+		{
+			"type": "CheckBox",
+			"name": "AutoDimBacklight",
+			"caption": "Auto Dim Backlight"
+		},
+		{
+			"type": "CheckBox",
+			"name": "AutoShutdownBacklight",
+			"caption": "Auto Shutdow Backlight"
+		},
+		{
+			"type": "CheckBox",
+			"name": "AutoCreateVariable",
+			"caption": "Auto Create Variables"
+		},
+		{
+			"type": "CheckBox",
+			"name": "WriteDisplayContent",
+			"caption": "Write Display Content"
+		},
 		{
 			"type": "CheckBox",
 			"name": "DisplayDateTimeHeader",
@@ -120,7 +125,7 @@
 			"type": "CheckBox",
 			"name": "DisplayPageControlFooter",
 			"caption": "Display Page Control Footer"
-		},
+		},	
 		{
             "type": "List",
             "name": "Parameter",
@@ -186,7 +191,9 @@
                 "Name": "SliderMargin",
                 "Value": 10
             }
-			
+		
+			]
+		}
         ]
         }
 	],
