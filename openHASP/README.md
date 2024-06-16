@@ -13,7 +13,7 @@ Das Modul stellt die Verbinung mit einem openHASP-Display über MQTT bereit.
 
 ### 1. Funktionsumfang
 
-die Instanz openHASP verbidet sich mit einem openHASP Display via MQTT
+Die Instanz openHASP verbidet sich mit einem openHASP Display via MQTT.
 
 ### 2. Voraussetzungen
 
@@ -80,9 +80,9 @@ __Parameter__:
 Name | Standardwert | Beschreibung
 --------  | ------------------| ------------------
 DisplayHeight | 480| Höhe des Displays in Pixeln
-DisplayWidth | 480 |Breite des Displays in Pixeln
+DisplayWidth | 480 | Breite des Displays in Pixeln
 DisplayMarginTop | 0 | Oberer Rand für eigene Header-Leiste
-DisplayMarginBottom | 0 | Unteret Rand für eigene Footer-Leiste
+DisplayMarginBottom | 0 | Unterer Rand für eigene Footer-Leiste
 MarginSide | 10 | Rand seitlich der UI-Elemente und zwischen den Elementen
 ButtonHeight | 60 | Standardhöhe der Buttons
 LabelHeight | 40 | Standardhöhe der Label 
@@ -94,13 +94,13 @@ SliderMargin | 10 | Zusätzlicher Rand unterhalb und oberhalb des Sliders um die
 
 ### 5. Statusvariablen und Profile
 
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
+Die Statusvariablen/Kategorien werden automatisch angelegt. 
 
 #### Statusvariablen
 
 Name   | Typ     | Beschreibung
 ------ | ------- | ------------
-Leerlauf | Integer | Zeigt den Leerlaufzustand an 
+Leerlauf | Integer | Zeigt den Leerlaufzustand (Idle) an 
 Hintergrundbeleuchtung |Integer | Wert der Hintergrundbeleuchtung (Kann geschaltet werden)
 Seite  |Integer | Aktuell aufgerufenen Seite (Kann geschaltet werden)
 Online| Boolean | Online Status
