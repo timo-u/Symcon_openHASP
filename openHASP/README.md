@@ -75,6 +75,7 @@ Label | String, Integer, Float  | die Beschriftung kann Variablen nutzen. z.B. '
 Button | Skript  | Das Script wird beim Drücken des Buttons ausgeführt 
 Toggel Button | Boolean  | Der Wert wird sofern vorhanden über eine RequestAction geschaltet. Sofern keine RequestAction verfügbar ist wird die Variable direkt geschaltet. 
 Slider | Integer  | Die Min- und Max-Werte werden über "Parameter überschreiben" gesetzt 
+Dropdown | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
 
 __Parameter__:
 Name | Standardwert | Beschreibung

@@ -26,7 +26,8 @@
 						{ "caption": "Label", "value": 0 },
 						{ "caption": "Button", "value": 1 },
 						{ "caption": "Toggle Button", "value": 2 },
-						{ "caption": "Slider", "value": 3 }
+						{ "caption": "Slider", "value": 3 },
+						{ "caption": "Dropdown", "value": 4 }
 					]
 				}
             },{

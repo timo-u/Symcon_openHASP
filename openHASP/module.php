@@ -108,15 +108,35 @@ class openHASP extends IPSModule
 
                 if(IPS_GetObject($element['Object'])['ObjectType'] != 2) {
                     echo 	"Fehler bei ausgewähltem Objekt ".$count.":". PHP_EOL .
-                            'Objekt mit der ID: '.$element['Object'].' ist kein Script'. PHP_EOL .
-                            'Das Objekt für einen Button muss vom Typ "Varaible" sein.'. PHP_EOL  ;
+                            'Objekt mit der ID: '.$element['Object'].' ist keine Variable'. PHP_EOL .
+                            'Das Objekt für einen Slider muss vom Typ "Varaible" sein.'. PHP_EOL  ;
                 }
+            }
+			if($element['Type'] == 4 && $element['Object'] != 1) { // Dropdown & Element ausgewählt==> Variable
+                if(!IPS_ObjectExists($element['Object'])) {
+                    echo 	"Fehler bei ausgewähltem Objekt ".$count.":". PHP_EOL .
+                            'Das Objekt mit der ID: '.$element['Object'].' existiert nicht'. PHP_EOL ;
+                }
+
+                if(IPS_GetObject($element['Object'])['ObjectType'] != 2) {
+                    echo 	"Fehler bei ausgewähltem Objekt ".$count.":". PHP_EOL .
+                            'Objekt mit der ID: '.$element['Object'].' ist keine Variable'. PHP_EOL .
+                            'Das Objekt für einen Dropdown muss vom Typ "Varaible" sein.'. PHP_EOL  ;
+                }
+				$var = IPS_GetVariable($element['Object']);
+				$profile = IPS_GetVariableProfile($var['VariableProfile']);
+				if(count($profile['Associations'])<2){
+                    echo 	"Fehler bei ausgewähltem Objekt ".$count.":". PHP_EOL .
+                            'Objekt mit der ID: '.$element['Object'].' enthält keine Assoziationen'. PHP_EOL .
+                            'Das Objekt für einen Dropdown muss Assoziationen ehthalten'. PHP_EOL  ;
+                }
+					
             }
 			
 			if( $element['Object'] != 1)
 			{
 			$this->RegisterReference($element['Object']);
-			if($element['Type'] == 0|| $element['Type'] == 2|| $element['Type'] == 3)
+			if($element['Type'] == 0|| $element['Type'] == 2|| $element['Type'] == 3|| $element['Type'] == 4)
 			{
 				$this->RegisterMessage($element['Object'], VM_UPDATE);
 			}
@@ -350,6 +370,30 @@ class openHASP extends IPSModule
 					}
 				}
 				}
+				if($Element != null && $Element->type == 4 ) // Wenn Typ= Dropdown Button und Value empfangen
+				{
+				if($Element->objectId != 1)
+				{
+					$var = IPS_GetVariable($Element->objectId);
+					$profile = IPS_GetVariableProfile($var['VariableProfile']);
+					$count =0; 
+					
+					$value = $profile['Associations'][$data->val]['Value'];
+					
+					
+					if(HasAction($Element->objectId))
+					{
+						RequestAction($Element->objectId,$value);
+						$this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$value , 0);
+					}
+					else
+					{
+						SetValue($Element->objectId,$value);
+						$this->SendDebug('SetValue()', $Element->objectId . " Value: ".$value , 0);
+					}
+				}
+				}
+				
             }
             if(property_exists($data, 'text')) {
                 $key = $topic.'_text';
@@ -413,6 +457,21 @@ class openHASP extends IPSModule
 				{
 					$this->SetItemText($Element->page,$Element->id,sprintf($Element->caption ,($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben 
 				}
+			}
+			if($Element->type== 4) //  Bei Dropdown 
+			{	
+					$var = IPS_GetVariable($sendId);
+					$profile = IPS_GetVariableProfile($var['VariableProfile']);
+					$count =0; 
+					
+					foreach ($profile['Associations'] as $association)
+					{
+						if($association['Value'] == $data[0])
+							$this->SetItemValue($Element->page,$Element->id,$count); 
+						$count++;
+					}
+			
+				
 			}
 			}
         }
@@ -647,6 +706,39 @@ class openHASP extends IPSModule
 				if($element['Object']!=1)
 				{
 					$array['val']=GetValue($element['Object']);
+				}
+                $this->AddJsonL(array_merge($array, $override));
+                $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
+            }
+			 if($element['Type'] == 4) { //Dropdown
+				$h = $buttonHeight;
+                if($y + $h > $yStop) {
+                    $y = $yStart;
+                    $page++;
+                }
+
+                $array = array(	'obj' => 'dropdown',
+                                    'page' => $page,
+                                    'id' => $itemcount,
+                                    'x' => $x,
+                                    'y' => $y,
+                                    'h' => $h,
+                                    'w' => $elementWidth
+                                    );
+				if($element['Object']!=1)
+				{
+					$array['val']=GetValue($element['Object']);
+					
+					$var = IPS_GetVariable($element['Object']);
+					$profile = IPS_GetVariableProfile($var['VariableProfile']);
+					$list = array(); 
+					foreach ($profile['Associations'] as $association)
+					{
+						$list[] = $association['Name'];
+					}
+					$array['options'] = implode("\n",$list);
+					
+					
 				}
                 $this->AddJsonL(array_merge($array, $override));
                 $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
