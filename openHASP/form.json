@@ -27,7 +27,12 @@
 						{ "caption": "Button", "value": 1 },
 						{ "caption": "Toggle Button", "value": 2 },
 						{ "caption": "Slider", "value": 3 },
-						{ "caption": "Dropdown", "value": 4 }
+						{ "caption": "Dropdown", "value": 4 },
+						{ "caption": "Arc", "value": 5 },
+						{ "caption": "LED Inicator", "value": 6 },
+						{ "caption": "Line Meter", "value": 7 },
+						{ "caption": "Switch", "value": 8 },
+						{ "caption": "New Page", "value": 99 }
 					]
 				}
             },{
@@ -191,7 +196,29 @@
             {
                 "Name": "SliderMargin",
                 "Value": 10
+            },
+            {
+                "Name": "ArcHeight",
+                "Value": 100
+            },
+            {
+                "Name": "LedHeight",
+                "Value": 40
+            }, {
+                "Name": "LedMinValue",
+                "Value": 50
+            },
+            {
+                "Name": "LineMeterHeight",
+                "Value": 100
+            },
+            {
+                "Name": "SwitchHeight",
+                "Value": 60
             }
+		
+		
+		
 		
 			]
 		}

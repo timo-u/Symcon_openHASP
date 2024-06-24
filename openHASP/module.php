@@ -136,10 +136,9 @@ class openHASP extends IPSModule
 			if( $element['Object'] != 1)
 			{
 			$this->RegisterReference($element['Object']);
-			if($element['Type'] == 0|| $element['Type'] == 2|| $element['Type'] == 3|| $element['Type'] == 4)
-			{
-				$this->RegisterMessage($element['Object'], VM_UPDATE);
-			}
+		
+			$this->RegisterMessage($element['Object'], VM_UPDATE);
+			
 			}
 			
             $count++;
@@ -354,7 +353,7 @@ class openHASP extends IPSModule
                     $this->SetValue($key, $data->val);
                 }
 				if($Element != null 
-				&& ($Element->type == 2|| $Element->type == 3) ) // Wenn Typ= Toggle Button und Value empfangen
+				&& ($Element->type == 2|| $Element->type == 3|| $Element->type == 5|| $Element->type == 8) ) // Wenn Typ= Toggle Button, Slider,Arc, Switch und Value empfangen
 				{
 				if($Element->objectId != 1)
 				{
@@ -443,9 +442,25 @@ class openHASP extends IPSModule
 			
 			$this->SendDebug('FoundMapping()', json_encode($Element) ,0);
 			
-			if($Element->type== 2|| $Element->type==3) // Bei Toggel-Button und Slider 
+			if($Element->type== 2|| $Element->type==3|| $Element->type==5|| $Element->type==7) // Bei Toggel-Button, Slider, Arc, LineMeter
 			{	
 				$this->SetItemValue($Element->page,$Element->id,intval($data[0])); 
+			}
+			if($Element->type== 6) // Bei LED Indicator
+			{	
+				$var = IPS_GetVariable($sendId);
+				
+				if($var['VariableType'] == 0 ) // Bei Boolscher Variable  
+				{
+					if($data[0]) // Bei Boolscher Variable LEDInidactor ein 
+						$this->SetItemValue($Element->page,$Element->id,255); 
+					else
+						$this->SetItemValue($Element->page,$Element->id,$this->GetParameter("LedMinValue"));
+				}
+				else	
+				{
+					$this->SetItemValue($Element->page,$Element->id,intval($data[0])); 
+				}
 			}
 			if($Element->type == 0) //Bei Label 
 			{	
@@ -497,6 +512,11 @@ class openHASP extends IPSModule
         $sliderHeigh = $this->GetParameter("SliderHeight");
         $buttonHeight =$this->GetParameter("ButtonHeight");
 		$SliderMargin = $this->GetParameter("SliderMargin");
+		$arcHeigh = $this->GetParameter("ArcHeight");
+		$ledHeigh= $this->GetParameter("LedHeight");
+		$linemeterHeigh= $this->GetParameter("LineMeterHeight");
+		$switchHeigh= $this->GetParameter("SwitchHeight");
+		
 		
 		$DisplayMarginTop = $this->GetParameter("DisplayMarginTop");
 		$DisplayMarginBottom = $this->GetParameter("DisplayMarginBottom");
@@ -567,8 +587,7 @@ class openHASP extends IPSModule
                                             'mode' => 'break',
                                             'align' => 1,
                                             'text_color' => '#FFFFFF'),$text));
-			// SWIPE 'jsonl {"page":0,"id":6,"obj":"obj","swipe":{"left":"page next","right":"page prev"},"x":0,"y":410,"h":70,"w":480,"opacity":1,"comment":"swipe-area-at-top"}'								
-        }
+		}
 
         $UiElements = json_decode($this->ReadPropertyString("UiElements"), true);
         $itemcount = 1;
@@ -578,6 +597,7 @@ class openHASP extends IPSModule
 		$x=$margin;
 	
         foreach ($UiElements as &$element) {
+			
             $this->SendDebug('RewriteDisplay()', 'Caption: '.print_r($element, true), 0);
 		
 			
@@ -628,6 +648,7 @@ class openHASP extends IPSModule
             if ($override == null) {
                 $override = array();
             }
+			
 
 
 
@@ -710,7 +731,7 @@ class openHASP extends IPSModule
                 $this->AddJsonL(array_merge($array, $override));
                 $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
             }
-			 if($element['Type'] == 4) { //Dropdown
+			if($element['Type'] == 4) { //Dropdown
 				$h = $buttonHeight;
                 if($y + $h > $yStop) {
                     $y = $yStart;
@@ -741,8 +762,122 @@ class openHASP extends IPSModule
 					
 				}
                 $this->AddJsonL(array_merge($array, $override));
-                $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
+                
             }
+			if($element['Type'] == 5) { //Arc
+			
+                if($y + $arcHeigh> $yStop) {
+                    $y = $yStart;
+                    $page++;
+                }
+
+
+                $h = $arcHeigh;
+                $array = array(	'obj' => 'arc',
+                                    'page' => $page,
+                                    'id' => $itemcount,
+                                    'x' => $x,
+                                    'y' => $y,
+                                    'h' => $h,
+                                    'start_angle' => 135,
+                                    'end_angle' => 45,
+									'start_angle10' => 135,
+                                    'end_angle10' => 45,
+                                    'w' => $arcHeigh
+                                    );
+				if($element['Object']!=1)
+				{
+					$array['val']=GetValue($element['Object']);
+				}
+                $this->AddJsonL(array_merge($array, $override));
+            }
+			if($element['Type'] == 6) { //LED Indicator
+			
+                if($y + $ledHeigh> $yStop) {
+                    $y = $yStart;
+                    $page++;
+                }
+
+
+                $h = $ledHeigh;
+                $array = array(	'obj' => 'led',
+                                    'page' => $page,
+                                    'id' => $itemcount,
+                                    'x' => $x,
+                                    'y' => $y,
+                                    'h' => $h,
+                                    'w' => $ledHeigh
+                                    );
+				if($element['Object']!=1)
+				{
+					$var = IPS_GetVariable($element['Object']);
+				
+					if($var['VariableType'] == 0 ) // Bei Boolscher Variable  
+					{
+					if(GetValue($element['Object'])) 
+						$array['val']=255;
+					else
+						$array['val']=$this->GetParameter("LedMinValue");
+					}
+					else
+					{
+					$array['val']=GetValue($element['Object']);
+					}
+				}
+                $this->AddJsonL(array_merge($array, $override));
+            }
+			if($element['Type'] == 7) { //LineMeter
+			
+                if($y + $linemeterHeigh> $yStop) {
+                    $y = $yStart;
+                    $page++;
+                }
+
+
+                $h = $linemeterHeigh;
+                $array = array(	'obj' => 'linemeter',
+                                    'page' => $page,
+                                    'id' => $itemcount,
+                                    'x' => $x,
+                                    'y' => $y,
+                                    'h' => $h,
+                                    'w' => $linemeterHeigh
+                                    );
+				if($element['Object']!=1)
+				{
+					$array['val']=GetValue($element['Object']);
+				}
+                $this->AddJsonL(array_merge($array, $override));
+            }
+			if($element['Type'] == 8) { //Switch
+			
+                if($y + $switchHeigh> $yStop) {
+                    $y = $yStart;
+                    $page++;
+                }
+
+
+                $h = $switchHeigh;
+                $array = array(	'obj' => 'switch',
+                                    'page' => $page,
+                                    'id' => $itemcount,
+                                    'x' => $x,
+                                    'y' => $y,
+                                    'h' => $h,
+                                    'w' => $elementWidth
+                                    );
+				if($element['Object']!=1)
+				{
+					$array['val']=GetValue($element['Object']);
+				}
+                $this->AddJsonL(array_merge($array, $override));
+            }
+			
+			if($element['Type'] == 99) { //New Page
+				$y = $yStart;
+                $page++;
+				continue;
+			}
 
 			$items[] = Array("objkey"=>"p".$page."b".$itemcount , "data"=>  Array("page"=>$page,"id"=>$itemcount,"type"=>$element['Type'],"objectId"=>$element['Object'],"caption"=>$element['Caption']));
 

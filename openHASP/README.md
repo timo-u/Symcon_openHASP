@@ -76,6 +76,12 @@ Button | Skript  | Das Script wird beim Drücken des Buttons ausgeführt
 Toggel Button | Boolean  | Der Wert wird sofern vorhanden über eine RequestAction geschaltet. Sofern keine RequestAction verfügbar ist wird die Variable direkt geschaltet. 
 Slider | Integer  | Die Min- und Max-Werte werden über "Parameter überschreiben" gesetzt 
 Dropdown | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
+Arc | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
+LED Inicator | Integer, Boolean | LED Anzeige. Helligkeit wird von 0...255 angeggeben. Bei zuordnung einer boolschen Variable wird zwischen aus und an gewechselt 
+Line Meter | Integer  | Diagramm für Prozentualen Ausschlag  
+Switch | Boolean  | Schalter
+New Page | -  | Erstellt kein Element sonden führt zu einem Seitenumbruch
+
 
 __Parameter__:
 Name | Standardwert | Beschreibung
@@ -89,8 +95,11 @@ ButtonHeight | 60 | Standardhöhe der Buttons
 LabelHeight | 40 | Standardhöhe der Label 
 SliderHeight | 30 | Standardhöhe der Slider 
 SliderMargin | 10 | Zusätzlicher Rand unterhalb und oberhalb des Sliders um diesen mittig an andere Elemente anzupassen.
-
-
+ArcHeight | 100 | Höhe und Breite des Arc (Bogendiagramm)
+LedHeight | 40 | Höhe und Breite der LED Anzeige
+LedMinValue | 50 | Helligkeit der LED für den Zustand aus bei einer Boolschen Variable
+LineMeterHeight | 50 | Standardhöhe des Line Meter
+SwitchHeight | 50 | Standardhöhe des Schalters 
 
 
 ### 5. Statusvariablen und Profile
