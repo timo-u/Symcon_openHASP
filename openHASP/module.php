@@ -442,7 +442,7 @@ class openHASP extends IPSModule
 			
 			$this->SendDebug('FoundMapping()', json_encode($Element) ,0);
 			
-			if($Element->type== 2|| $Element->type==3|| $Element->type==5|| $Element->type==7) // Bei Toggel-Button, Slider, Arc, LineMeter
+			if($Element->type== 2|| $Element->type==3|| $Element->type==5|| $Element->type==7|| $Element->type==8) // Bei Toggel-Button, Slider, Arc, LineMeter, Switch
 			{	
 				$this->SetItemValue($Element->page,$Element->id,intval($data[0])); 
 			}
@@ -868,7 +868,7 @@ class openHASP extends IPSModule
                                     );
 				if($element['Object']!=1)
 				{
-					$array['val']=GetValue($element['Object']);
+					$array['val']=intval(GetValue($element['Object']));
 				}
                 $this->AddJsonL(array_merge($array, $override));
             }
