@@ -805,7 +805,8 @@ class openHASP extends IPSModule
                                     'x' => $x,
                                     'y' => $y,
                                     'h' => $h,
-                                    'w' => $linemeterHeigh
+                                    'w' => $linemeterHeigh,
+									'value_str' => $element['Caption']
                                     );
                 if($element['Object'] != 1) {
                     $array['val'] = GetValue($element['Object']);
