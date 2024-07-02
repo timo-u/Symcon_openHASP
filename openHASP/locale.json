@@ -32,7 +32,8 @@
             "Release": "Losgelassen",
             "Changed": "Geändert",
             "DisplayHeight": "Display Höhe",
-            "Width": "Breite"
+            "Width": "Breite",
+            "Message received Script": "Nachricht empfangen Skript"
         }
     }
 }

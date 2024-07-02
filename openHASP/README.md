@@ -42,7 +42,7 @@ Display Inhalt schreiben | Entfernt die Elemente auf dem Display und erstellt di
 Ui-Elemente | Liste aus Elementen, die auf dem Displayangezeigt werden sollen. 
 Datum und Uhrzeit im Header anzeigen | Blendet auf allen Seiten das Datum und die Uhrzeit ein 
 Buttons zum Umblättern anzeigen | Blendet die Buttons zum Umblättern am unteren Bildrand ein. 
-
+Nachricht empfangen Skript | Wird aufgerfen wenn ein Button gedrückt oder ein Wert auf dem Display geändert wurde. Diese Funktion dient dazu die Events eigener Objekte auszuwerten, die nicht in den UI-Elementen angelegt wurden. Die Daten können im Script mit der Variable $_IPS['Data'] empfangen werden. 
 
 __Ui-Elemente__:
 
@@ -59,8 +59,9 @@ Setzt die beschriftung des Labels oder des Buttons.
 [Liste der Objektparameteter](https://openhasp.com/0.7.0/design/objects/)
 
 #### Abstand
-Der Abstand zum Beginn des unteren Objekts.
+Der Abstand bis zum Beginn des nächsten Objekts.
 Der Abstand kann auch negativ sein, um das nachfolgene Objekt auf die gleiche Höhe zu bringen. 
+Folgt ein weiteres Objekt in dieser Zeile wird der Abstand dieses Objektes ignoriert. 
 
 #### Breite 
 Setzt die relative Breite des Objekts. Wenn zwei Objekte in eine Zeile passen werden sie hientereinander dargestellt. 

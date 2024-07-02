@@ -282,6 +282,12 @@
                         }
                     ]
                 }
+				,
+                {
+                    "type": "SelectScript",
+                    "name": "MessageReceivedScript",
+                    "caption": "Message received Script"
+                }
             ]
         }
     ],

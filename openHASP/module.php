@@ -19,6 +19,8 @@ class openHASP extends IPSModule
         $this->RegisterPropertyString('Parameter', "");
         $this->RegisterPropertyBoolean('DisplayDateTimeHeader', true);
         $this->RegisterPropertyBoolean('DisplayPageControlFooter', true);
+		
+		$this->RegisterPropertyInteger('MessageReceivedScript', 1);
 
         $this->RegisterAttributeString("ElementToObjectMapping", "{}");
 
@@ -251,6 +253,8 @@ class openHASP extends IPSModule
         $this->SendDebug('ReceiveData()', 'Topic: '.$topic . ' Data: '.$data, 0);
 
         $this->HandleData($topic, $data);
+		
+		
 
     }
 
@@ -396,8 +400,13 @@ class openHASP extends IPSModule
                     $this->SetValue($key, $data->color);
                 }
             }
+			
+			$scriptid = $this->ReadPropertyInteger("MessageReceivedScript");
+			if($scriptid != 1) {
+				IPS_RunScriptEx($scriptid, Array( "Data" => json_encode(Array("Topic" => $topic,"Data" => $data))));
+			}
         }
-
+		
         if($topic == "statusupdate") {
 
         }
