@@ -11,16 +11,16 @@ class openHASP extends IPSModule
         $this->RegisterPropertyString('Hostname', 'Hostname');
 
         $this->RegisterPropertyBoolean('AutoDimBacklight', false);
-		$this->RegisterPropertyBoolean('AutoShutdownBacklight', false);
+        $this->RegisterPropertyBoolean('AutoShutdownBacklight', false);
         $this->RegisterPropertyBoolean('AutoCreateVariable', false);
-		
+
         $this->RegisterPropertyBoolean('WriteDisplayContent', false);
         $this->RegisterPropertyString('UiElements', "");
-		$this->RegisterPropertyString('Parameter', "");
+        $this->RegisterPropertyString('Parameter', "");
         $this->RegisterPropertyBoolean('DisplayDateTimeHeader', true);
         $this->RegisterPropertyBoolean('DisplayPageControlFooter', true);
-		
-		$this->RegisterAttributeString("ElementToObjectMapping", "{}"); 
+
+        $this->RegisterAttributeString("ElementToObjectMapping", "{}");
 
         $this->ConnectParent('{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}'); //Automatisch mit der MQTT-Server Instanz verbiden
 
@@ -52,16 +52,17 @@ class openHASP extends IPSModule
     private function UpdateElements()
     {
         $UiElements = json_decode($this->ReadPropertyString("UiElements"), true);
-		if($UiElements==null)
-			$UiElements= array();
-		
+        if($UiElements == null) {
+            $UiElements = array();
+        }
+
         $count = 1;
-		//Reference
+        //Reference
         //Unregister
         foreach ($this->GetReferenceList() as $id) {
             $this->UnregisterReference($id);
         }
-		//Messages
+        //Messages
         //Unregister all messages
         foreach ($this->GetMessageList() as $senderID => $messages) {
             foreach ($messages as $message) {
@@ -69,7 +70,7 @@ class openHASP extends IPSModule
             }
         }
 
-        
+
         foreach ($UiElements as &$element) {
             if($this->json_validate($element['OverrideParameter']) || $element['OverrideParameter'] == "") {
 
@@ -112,7 +113,7 @@ class openHASP extends IPSModule
                             'Das Objekt für einen Slider muss vom Typ "Varaible" sein.'. PHP_EOL  ;
                 }
             }
-			if($element['Type'] == 4 && $element['Object'] != 1) { // Dropdown & Element ausgewählt==> Variable
+            if($element['Type'] == 4 && $element['Object'] != 1) { // Dropdown & Element ausgewählt==> Variable
                 if(!IPS_ObjectExists($element['Object'])) {
                     echo 	"Fehler bei ausgewähltem Objekt ".$count.":". PHP_EOL .
                             'Das Objekt mit der ID: '.$element['Object'].' existiert nicht'. PHP_EOL ;
@@ -123,24 +124,23 @@ class openHASP extends IPSModule
                             'Objekt mit der ID: '.$element['Object'].' ist keine Variable'. PHP_EOL .
                             'Das Objekt für einen Dropdown muss vom Typ "Varaible" sein.'. PHP_EOL  ;
                 }
-				$var = IPS_GetVariable($element['Object']);
-				$profile = IPS_GetVariableProfile($var['VariableProfile']);
-				if(count($profile['Associations'])<2){
+                $var = IPS_GetVariable($element['Object']);
+                $profile = IPS_GetVariableProfile($var['VariableProfile']);
+                if(count($profile['Associations']) < 2) {
                     echo 	"Fehler bei ausgewähltem Objekt ".$count.":". PHP_EOL .
                             'Objekt mit der ID: '.$element['Object'].' enthält keine Assoziationen'. PHP_EOL .
                             'Das Objekt für einen Dropdown muss Assoziationen ehthalten'. PHP_EOL  ;
                 }
-					
+
             }
-			
-			if( $element['Object'] != 1)
-			{
-			$this->RegisterReference($element['Object']);
-		
-			$this->RegisterMessage($element['Object'], VM_UPDATE);
-			
-			}
-			
+
+            if($element['Object'] != 1) {
+                $this->RegisterReference($element['Object']);
+
+                $this->RegisterMessage($element['Object'], VM_UPDATE);
+
+            }
+
             $count++;
         }
     }
@@ -163,8 +163,8 @@ class openHASP extends IPSModule
                 "Object" => 1
             );
         }
-		
-		return json_encode($data);
+
+        return json_encode($data);
 
     }
     //Ab PHP 8.3 ist die Funktion bestandteil von PHP
@@ -175,19 +175,19 @@ class openHASP extends IPSModule
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-	private function GetParameter(string $parametername)
-	{
-		$Parameter = json_decode($this->ReadPropertyString("Parameter"));
-		$found_key = array_search($parametername, array_column($Parameter, 'Name'));
-		$Value = $Parameter[$found_key]->Value;
-		$this->SendDebug('GetParameter()', $Parameter[$found_key]->Name .' => ' . $Value ,0);
-		return $Value;
-		
-	}
-	
-	
-	
-	
+    private function GetParameter(string $parametername)
+    {
+        $Parameter = json_decode($this->ReadPropertyString("Parameter"));
+        $found_key = array_search($parametername, array_column($Parameter, 'Name'));
+        $Value = $Parameter[$found_key]->Value;
+        $this->SendDebug('GetParameter()', $Parameter[$found_key]->Name .' => ' . $Value, 0);
+        return $Value;
+
+    }
+
+
+
+
     private function Maintain()
     {
         $this->MaintainVariable('Online', $this->Translate('Online'), 0, 'OpenHASP.Online', 1, true);
@@ -256,8 +256,8 @@ class openHASP extends IPSModule
 
     private function HandleData(string $topic, string $data)
     {
-		$ElementToObjectMapping= json_decode($this->ReadAttributeString("ElementToObjectMapping"));
-		
+        $ElementToObjectMapping = json_decode($this->ReadAttributeString("ElementToObjectMapping"));
+
         if($topic == "idle") {
             switch ($data) {
                 case 'short':
@@ -280,10 +280,11 @@ class openHASP extends IPSModule
                         $this->SendCommand('backlight=255');
                 }
             }
-			if($this->ReadPropertyBoolean('AutoShutdownBacklight')) {
-				if($data=='long')
-					$this->SendCommand('backlight=0');
-				}
+            if($this->ReadPropertyBoolean('AutoShutdownBacklight')) {
+                if($data == 'long') {
+                    $this->SendCommand('backlight=0');
+                }
+            }
 
 
         }
@@ -296,16 +297,15 @@ class openHASP extends IPSModule
         }
 
         if(preg_match('/p\d{1,2}b\d{1,3}/', $topic)) {
-			
-			$found_key = array_search($topic, array_column($ElementToObjectMapping, 'objkey'));
-			$this->SendDebug('FoundMapping()', $found_key, 0);
-			$Element = null;
-			if($found_key!=false)
-			{
-				$Element = $ElementToObjectMapping[$found_key]->data;
-				$this->SendDebug('FoundMapping()', json_encode($Element) ,0);
-			}
-			 
+
+            $found_key = array_search($topic, array_column($ElementToObjectMapping, 'objkey'));
+            $this->SendDebug('FoundMapping()', $found_key, 0);
+            $Element = null;
+            if($found_key != false) {
+                $Element = $ElementToObjectMapping[$found_key]->data;
+                $this->SendDebug('FoundMapping()', json_encode($Element), 0);
+            }
+
             $data = json_decode($data);
             if(property_exists($data, 'event')) {
                 $key = $topic.'_event';
@@ -332,19 +332,17 @@ class openHASP extends IPSModule
                             $this->SetValue($key, 0);
                     }
                 }
-			if($Element != null 
-			&& $Element->type == 1 
-			&& $data->event =='down' ) // Wenn Typ=Button und Button gedrückt
-			{
-				if($Element->objectId != 1)
-				{
-					IPS_RunScript(	$Element->objectId);
-					$this->SendDebug('IPS_RunScript()', $Element->objectId, 0);
-				}
-			}
-				
+                if($Element != null
+                && $Element->type == 1
+                && $data->event == 'down') { // Wenn Typ=Button und Button gedrückt
+                    if($Element->objectId != 1) {
+                        IPS_RunScript($Element->objectId);
+                        $this->SendDebug('IPS_RunScript()', $Element->objectId, 0);
+                    }
+                }
+
             }
-			
+
             if(property_exists($data, 'val')) {
                 $key = $topic.'_value';
                 if (@$this->GetIDForIdent($key) != false || $this->ReadPropertyBoolean('AutoCreateVariable')) {
@@ -352,47 +350,37 @@ class openHASP extends IPSModule
                     $this->MaintainAction($key, true);
                     $this->SetValue($key, $data->val);
                 }
-				if($Element != null 
-				&& ($Element->type == 2|| $Element->type == 3|| $Element->type == 5|| $Element->type == 8) ) // Wenn Typ= Toggle Button, Slider,Arc, Switch und Value empfangen
-				{
-				if($Element->objectId != 1)
-				{
-					if(HasAction($Element->objectId))
-					{
-						RequestAction($Element->objectId,$data->val);
-						$this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$data->val , 0);
-					}
-					else
-					{
-						SetValue($Element->objectId,$data->val);
-						$this->SendDebug('SetValue()', $Element->objectId . " Value: ".$data->val , 0);
-					}
-				}
-				}
-				if($Element != null && $Element->type == 4 ) // Wenn Typ= Dropdown Button und Value empfangen
-				{
-				if($Element->objectId != 1)
-				{
-					$var = IPS_GetVariable($Element->objectId);
-					$profile = IPS_GetVariableProfile($var['VariableProfile']);
-					$count =0; 
-					
-					$value = $profile['Associations'][$data->val]['Value'];
-					
-					
-					if(HasAction($Element->objectId))
-					{
-						RequestAction($Element->objectId,$value);
-						$this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$value , 0);
-					}
-					else
-					{
-						SetValue($Element->objectId,$value);
-						$this->SendDebug('SetValue()', $Element->objectId . " Value: ".$value , 0);
-					}
-				}
-				}
-				
+                if($Element != null
+                && ($Element->type == 2 || $Element->type == 3 || $Element->type == 5 || $Element->type == 8)) { // Wenn Typ= Toggle Button, Slider,Arc, Switch und Value empfangen
+                    if($Element->objectId != 1) {
+                        if(HasAction($Element->objectId)) {
+                            RequestAction($Element->objectId, $data->val);
+                            $this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$data->val, 0);
+                        } else {
+                            SetValue($Element->objectId, $data->val);
+                            $this->SendDebug('SetValue()', $Element->objectId . " Value: ".$data->val, 0);
+                        }
+                    }
+                }
+                if($Element != null && $Element->type == 4) { // Wenn Typ= Dropdown Button und Value empfangen
+                    if($Element->objectId != 1) {
+                        $var = IPS_GetVariable($Element->objectId);
+                        $profile = IPS_GetVariableProfile($var['VariableProfile']);
+                        $count = 0;
+
+                        $value = $profile['Associations'][$data->val]['Value'];
+
+
+                        if(HasAction($Element->objectId)) {
+                            RequestAction($Element->objectId, $value);
+                            $this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$value, 0);
+                        } else {
+                            SetValue($Element->objectId, $value);
+                            $this->SendDebug('SetValue()', $Element->objectId . " Value: ".$value, 0);
+                        }
+                    }
+                }
+
             }
             if(property_exists($data, 'text')) {
                 $key = $topic.'_text';
@@ -424,71 +412,62 @@ class openHASP extends IPSModule
             }
         }
     }
-	
-	public function MessageSink($timestamp, $sendId, $messageID, $data)
+
+    public function MessageSink($timestamp, $sendId, $messageID, $data)
     {
-		 $this->SendDebug("MessageSink", "Message from sendId ".$sendId." with Message ".$messageID."\r\n Data: ".print_r($data, true),0);
-        if ($messageID == VM_UPDATE) { // Auf aktualisierungen reagieren. 
-			
-			$ElementToObjectMapping= json_decode($this->ReadAttributeString("ElementToObjectMapping"));
-			$elementsData = array_column($ElementToObjectMapping, 'data');
-		
-			$this->SendDebug("elementData",json_encode($elementsData),0);
-			
-			foreach ($elementsData as $Element) // alle UI-Elemente durchlaufen
-			{
-			if($Element->objectId != $sendId)
-				continue;
-			
-			$this->SendDebug('FoundMapping()', json_encode($Element) ,0);
-			
-			if($Element->type== 2|| $Element->type==3|| $Element->type==5|| $Element->type==7|| $Element->type==8) // Bei Toggel-Button, Slider, Arc, LineMeter, Switch
-			{	
-				$this->SetItemValue($Element->page,$Element->id,intval($data[0])); 
-			}
-			if($Element->type== 6) // Bei LED Indicator
-			{	
-				$var = IPS_GetVariable($sendId);
-				
-				if($var['VariableType'] == 0 ) // Bei Boolscher Variable  
-				{
-					if($data[0]) // Bei Boolscher Variable LEDInidactor ein 
-						$this->SetItemValue($Element->page,$Element->id,255); 
-					else
-						$this->SetItemValue($Element->page,$Element->id,$this->GetParameter("LedMinValue"));
-				}
-				else	
-				{
-					$this->SetItemValue($Element->page,$Element->id,intval($data[0])); 
-				}
-			}
-			if($Element->type == 0) //Bei Label 
-			{	
-				if($Element->caption == "")
-				{
-					$this->SetItemText($Element->page,$Element->id,strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben. 
-				}
-				else
-				{
-					$this->SetItemText($Element->page,$Element->id,sprintf($Element->caption ,($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben 
-				}
-			}
-			if($Element->type== 4) //  Bei Dropdown 
-			{	
-					$var = IPS_GetVariable($sendId);
-					$profile = IPS_GetVariableProfile($var['VariableProfile']);
-					$count =0; 
-					
-					foreach ($profile['Associations'] as $association)
-					{
-						if($association['Value'] == $data[0])
-							$this->SetItemValue($Element->page,$Element->id,$count); 
-						$count++;
-					}
-			
-				
-			}
-			}
+        $this->SendDebug("MessageSink", "Message from sendId ".$sendId." with Message ".$messageID."\r\n Data: ".print_r($data, true), 0);
+        if ($messageID == VM_UPDATE) { // Auf aktualisierungen reagieren.
+
+            $ElementToObjectMapping = json_decode($this->ReadAttributeString("ElementToObjectMapping"));
+            $elementsData = array_column($ElementToObjectMapping, 'data');
+
+            $this->SendDebug("elementData", json_encode($elementsData), 0);
+
+            foreach ($elementsData as $Element) { // alle UI-Elemente durchlaufen
+                if($Element->objectId != $sendId) {
+                    continue;
+                }
+
+                $this->SendDebug('FoundMapping()', json_encode($Element), 0);
+
+                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5 || $Element->type == 7) { // Bei Toggel-Button, Slider, Arc, LineMeter
+                    $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
+                }
+                if($Element->type == 6) { // Bei LED Indicator
+                    $var = IPS_GetVariable($sendId);
+
+                    if($var['VariableType'] == 0) { // Bei Boolscher Variable
+                        if($data[0]) { // Bei Boolscher Variable LEDInidactor ein
+                            $this->SetItemValue($Element->page, $Element->id, 255);
+                        } else {
+                            $this->SetItemValue($Element->page, $Element->id, $this->GetParameter("LedMinValue"));
+                        }
+                    } else {
+                        $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
+                    }
+                }
+                if($Element->type == 0) { //Bei Label
+                    if($Element->caption == "") {
+                        $this->SetItemText($Element->page, $Element->id, strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
+                    } else {
+                        $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                    }
+                }
+                if($Element->type == 4) { //  Bei Dropdown
+                    $var = IPS_GetVariable($sendId);
+                    $profile = IPS_GetVariableProfile($var['VariableProfile']);
+                    $count = 0;
+
+                    foreach ($profile['Associations'] as $association) {
+                        if($association['Value'] == $data[0]) {
+                            $this->SetItemValue($Element->page, $Element->id, $count);
+                        }
+                        $count++;
+                    }
+
+
+                }
+            }
         }
     }
 
@@ -504,35 +483,35 @@ class openHASP extends IPSModule
         if(!$this->ReadPropertyBoolean('WriteDisplayContent')) {
             return;
         }
-		 
+
         $displayheight = $this->GetParameter("DisplayHeight");
         $displaywidth = $this->GetParameter("DisplayWidth");
         $margin = $this->GetParameter("MarginSide");
         $labelHeight = $this->GetParameter("LabelHeight");
         $sliderHeigh = $this->GetParameter("SliderHeight");
-        $buttonHeight =$this->GetParameter("ButtonHeight");
-		$SliderMargin = $this->GetParameter("SliderMargin");
-		$arcHeigh = $this->GetParameter("ArcHeight");
-		$ledHeigh= $this->GetParameter("LedHeight");
-		$linemeterHeigh= $this->GetParameter("LineMeterHeight");
-		$switchHeigh= $this->GetParameter("SwitchHeight");
-		
-		
-		$DisplayMarginTop = $this->GetParameter("DisplayMarginTop");
-		$DisplayMarginBottom = $this->GetParameter("DisplayMarginBottom");
-		
+        $buttonHeight = $this->GetParameter("ButtonHeight");
+        $SliderMargin = $this->GetParameter("SliderMargin");
+        $arcHeigh = $this->GetParameter("ArcHeight");
+        $ledHeigh = $this->GetParameter("LedHeight");
+        $linemeterHeigh = $this->GetParameter("LineMeterHeight");
+        $switchHeigh = $this->GetParameter("SwitchHeight");
+
+
+        $DisplayMarginTop = $this->GetParameter("DisplayMarginTop");
+        $DisplayMarginBottom = $this->GetParameter("DisplayMarginBottom");
+
         $oneElementwidth = $displaywidth - (2 * $margin);
         $twoElementwidth = ($displaywidth - (3 * $margin)) / 2;
         $yStart = $DisplayMarginTop;
-        $yStop = $displayheight-$DisplayMarginBottom;
+        $yStop = $displayheight - $DisplayMarginBottom;
         $page = 1;
-		$offset =0; 
+        $offset = 0;
 
         $this->SendCommand('clearpage all');
 
         if($this->ReadPropertyBoolean('DisplayDateTimeHeader')) {
             $yStart = $labelHeight + $margin;
-			$text = json_decode('{"template":"\uE0ED %d.%m.%Y"}',true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
+            $text = json_decode('{"template":"\uE0ED %d.%m.%Y"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
             $this->AddJsonL(array_merge(array(	'obj' => 'label',
                                             'page' => 0,
                                             'id' => 200,
@@ -541,9 +520,9 @@ class openHASP extends IPSModule
                                             'h' => $labelHeight,
                                             'w' => $twoElementwidth,
                                             'align' => 0,
-                                            'text_color' => '#FFFFFF'),$text));
-											
-			$text = json_decode('{"template":"\uE150 %H:%M"}',true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
+                                            'text_color' => '#FFFFFF'), $text));
+
+            $text = json_decode('{"template":"\uE150 %H:%M"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
             $this->AddJsonL(array_merge(array(	'obj' => 'label',
                                             'page' => 0,
                                             'id' => 201,
@@ -552,13 +531,13 @@ class openHASP extends IPSModule
                                             'h' => $labelHeight,
                                             'w' => $twoElementwidth,
                                             'align' => 'right',
-                                            'text_color' => '#FFFFFF'),$text));
+                                            'text_color' => '#FFFFFF'), $text));
 
         }
-       
+
         if($this->ReadPropertyBoolean('DisplayPageControlFooter')) {
             $yStop = $displayheight - $margin - $buttonHeight;
-			$text = json_decode('{"text":"\uE04D"}',true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
+            $text = json_decode('{"text":"\uE04D"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
             $this->AddJsonL(array_merge(array(	'obj' => 'btn',
                                             'page' => 0,
                                             'id' => 10,
@@ -571,9 +550,9 @@ class openHASP extends IPSModule
                                             'action' => array('down' => 'page prev'),
                                             'mode' => 'break',
                                             'align' => 1,
-                                            'text_color' => '#FFFFFF'),$text));
-			
-			$text = json_decode('{"text":"\uE054"}',true);
+                                            'text_color' => '#FFFFFF'), $text));
+
+            $text = json_decode('{"text":"\uE054"}', true);
             $this->AddJsonL(array_merge(array(	'obj' => 'btn',
                                             'page' => 0,
                                             'id' => 11,
@@ -586,60 +565,57 @@ class openHASP extends IPSModule
                                             'action' => array('down' => 'page next'),
                                             'mode' => 'break',
                                             'align' => 1,
-                                            'text_color' => '#FFFFFF'),$text));
-		}
+                                            'text_color' => '#FFFFFF'), $text));
+        }
 
         $UiElements = json_decode($this->ReadPropertyString("UiElements"), true);
         $itemcount = 1;
         $y = $yStart;
-		$items=array();
-		$yend=0; 
-		$x=$margin;
-	
+        $items = array();
+        $yend = 0;
+        $x = $margin;
+
         foreach ($UiElements as &$element) {
-			
+
             $this->SendDebug('RewriteDisplay()', 'Caption: '.print_r($element, true), 0);
-		
-			
-			switch($element['Width']) {
-            case 12:	// 	voll
-				$elementWidth= $displaywidth - (2 * $margin);
-                break;
-			 case 10: //	5/6
-                $elementWidth = ($displaywidth - (2 * $margin))/6*5;
-                break;	
-            case 9: //	3/4
-                $elementWidth = ($displaywidth - (2 * $margin))/4*3;
-                break;
-            case 8:// 	2/3
-                $elementWidth = ($displaywidth - (1 * $margin))/3*2;
-                break;
-            case 6: //	1/2
-                $elementWidth = ($displaywidth - (3 * $margin))/2;
-                break;
-            case 4: //	1/3
-                $elementWidth = ($displaywidth - (4 * $margin))/3;
-                break;
-            case 3:	// 	1/4
-                $elementWidth = ($displaywidth - (5 * $margin))/4;
-                break;
-			case 2:	// 	1/6
-                $elementWidth = ($displaywidth - (7 * $margin))/6;
-                break;	
-			default:
-				$elementWidth= ($displaywidth - (2 * $margin));
-			}	
-			
-			if($x+$elementWidth<=$displaywidth)
-			{
-				
-			}
-			else
-			{
-				$y = $y + $offset; // Wenn neue Zeile dann Offset Margin + Elementhöhe zu Y adieren.
-				$x=$margin; // links beginnen
-			}
-			
+
+
+            switch($element['Width']) {
+                case 12:	// 	voll
+                    $elementWidth = $displaywidth - (2 * $margin);
+                    break;
+                case 10: //	5/6
+                    $elementWidth = ($displaywidth - (2 * $margin)) / 6 * 5;
+                    break;
+                case 9: //	3/4
+                    $elementWidth = ($displaywidth - (2 * $margin)) / 4 * 3;
+                    break;
+                case 8:// 	2/3
+                    $elementWidth = ($displaywidth - (1 * $margin)) / 3 * 2;
+                    break;
+                case 6: //	1/2
+                    $elementWidth = ($displaywidth - (3 * $margin)) / 2;
+                    break;
+                case 4: //	1/3
+                    $elementWidth = ($displaywidth - (4 * $margin)) / 3;
+                    break;
+                case 3:	// 	1/4
+                    $elementWidth = ($displaywidth - (5 * $margin)) / 4;
+                    break;
+                case 2:	// 	1/6
+                    $elementWidth = ($displaywidth - (7 * $margin)) / 6;
+                    break;
+                default:
+                    $elementWidth = ($displaywidth - (2 * $margin));
+            }
+
+            if($x + $elementWidth <= $displaywidth) {
+
+            } else {
+                $y = $y + $offset; // Wenn neue Zeile dann Offset Margin + Elementhöhe zu Y adieren.
+                $x = $margin; // links beginnen
+            }
+
             try {
                 $override = json_decode($element['OverrideParameter'], true);
             } catch (Exception $e) {
@@ -648,7 +624,7 @@ class openHASP extends IPSModule
             if ($override == null) {
                 $override = array();
             }
-			
+
 
 
 
@@ -667,19 +643,15 @@ class openHASP extends IPSModule
                                     'w' => $elementWidth,
                                     'text' => $element['Caption'],
                                     'align' => 1);
-				if($element['Object']!=1)
-				{
-					if($element['Caption'] == "")
-					{
-				
-						$array['text']=strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben. 
-					}
-					else
-					{
-						$array['text']=sprintf($element['Caption'] ,GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben 
-					}
-				}					
-							
+                if($element['Object'] != 1) {
+                    if($element['Caption'] == "") {
+
+                        $array['text'] = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
+                    } else {
+                        $array['text'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                    }
+                }
+
                 $this->AddJsonL(array_merge($array, $override));
             }
             if($element['Type'] == 1 || ($element['Type'] == 2)) { //Button 1 /ToggleButton 2
@@ -698,17 +670,16 @@ class openHASP extends IPSModule
                                     'toggle' => ($element['Type'] == 2),
                                     'text' => $element['Caption'],
                                     'align' => 1);
-				if($element['Type'] == 2 && $element['Object']!=1)
-				{
-					$array['val'] =intval(GetValue($element['Object']));
-				}
-				
-				
+                if($element['Type'] == 2 && $element['Object'] != 1) {
+                    $array['val'] = intval(GetValue($element['Object']));
+                }
+
+
                 $this->AddJsonL(array_merge($array, $override));
             }
 
             if($element['Type'] == 3) { //Slider
-			
+
                 if($y + $sliderHeigh + $SliderMargin > $yStop) {
                     $y = $yStart;
                     $page++;
@@ -720,19 +691,18 @@ class openHASP extends IPSModule
                                     'page' => $page,
                                     'id' => $itemcount,
                                     'x' => $x,
-                                    'y' => $y+$SliderMargin,
+                                    'y' => $y + $SliderMargin,
                                     'h' => $h,
                                     'w' => $elementWidth
                                     );
-				if($element['Object']!=1)
-				{
-					$array['val']=GetValue($element['Object']);
-				}
+                if($element['Object'] != 1) {
+                    $array['val'] = GetValue($element['Object']);
+                }
                 $this->AddJsonL(array_merge($array, $override));
                 $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
             }
-			if($element['Type'] == 4) { //Dropdown
-				$h = $buttonHeight;
+            if($element['Type'] == 4) { //Dropdown
+                $h = $buttonHeight;
                 if($y + $h > $yStop) {
                     $y = $yStart;
                     $page++;
@@ -746,27 +716,25 @@ class openHASP extends IPSModule
                                     'h' => $h,
                                     'w' => $elementWidth
                                     );
-				if($element['Object']!=1)
-				{
-					$array['val']=GetValue($element['Object']);
-					
-					$var = IPS_GetVariable($element['Object']);
-					$profile = IPS_GetVariableProfile($var['VariableProfile']);
-					$list = array(); 
-					foreach ($profile['Associations'] as $association)
-					{
-						$list[] = $association['Name'];
-					}
-					$array['options'] = implode("\n",$list);
-					
-					
-				}
+                if($element['Object'] != 1) {
+                    $array['val'] = GetValue($element['Object']);
+
+                    $var = IPS_GetVariable($element['Object']);
+                    $profile = IPS_GetVariableProfile($var['VariableProfile']);
+                    $list = array();
+                    foreach ($profile['Associations'] as $association) {
+                        $list[] = $association['Name'];
+                    }
+                    $array['options'] = implode("\n", $list);
+
+
+                }
                 $this->AddJsonL(array_merge($array, $override));
-                
+
             }
-			if($element['Type'] == 5) { //Arc
-			
-                if($y + $arcHeigh> $yStop) {
+            if($element['Type'] == 5) { //Arc
+
+                if($y + $arcHeigh > $yStop) {
                     $y = $yStart;
                     $page++;
                 }
@@ -781,19 +749,18 @@ class openHASP extends IPSModule
                                     'h' => $h,
                                     'start_angle' => 135,
                                     'end_angle' => 45,
-									'start_angle10' => 135,
+                                    'start_angle10' => 135,
                                     'end_angle10' => 45,
                                     'w' => $arcHeigh
                                     );
-				if($element['Object']!=1)
-				{
-					$array['val']=GetValue($element['Object']);
-				}
+                if($element['Object'] != 1) {
+                    $array['val'] = GetValue($element['Object']);
+                }
                 $this->AddJsonL(array_merge($array, $override));
             }
-			if($element['Type'] == 6) { //LED Indicator
-			
-                if($y + $ledHeigh> $yStop) {
+            if($element['Type'] == 6) { //LED Indicator
+
+                if($y + $ledHeigh > $yStop) {
                     $y = $yStart;
                     $page++;
                 }
@@ -808,27 +775,24 @@ class openHASP extends IPSModule
                                     'h' => $h,
                                     'w' => $ledHeigh
                                     );
-				if($element['Object']!=1)
-				{
-					$var = IPS_GetVariable($element['Object']);
-				
-					if($var['VariableType'] == 0 ) // Bei Boolscher Variable  
-					{
-					if(GetValue($element['Object'])) 
-						$array['val']=255;
-					else
-						$array['val']=$this->GetParameter("LedMinValue");
-					}
-					else
-					{
-					$array['val']=GetValue($element['Object']);
-					}
-				}
+                if($element['Object'] != 1) {
+                    $var = IPS_GetVariable($element['Object']);
+
+                    if($var['VariableType'] == 0) { // Bei Boolscher Variable
+                        if(GetValue($element['Object'])) {
+                            $array['val'] = 255;
+                        } else {
+                            $array['val'] = $this->GetParameter("LedMinValue");
+                        }
+                    } else {
+                        $array['val'] = GetValue($element['Object']);
+                    }
+                }
                 $this->AddJsonL(array_merge($array, $override));
             }
-			if($element['Type'] == 7) { //LineMeter
-			
-                if($y + $linemeterHeigh> $yStop) {
+            if($element['Type'] == 7) { //LineMeter
+
+                if($y + $linemeterHeigh > $yStop) {
                     $y = $yStart;
                     $page++;
                 }
@@ -843,15 +807,14 @@ class openHASP extends IPSModule
                                     'h' => $h,
                                     'w' => $linemeterHeigh
                                     );
-				if($element['Object']!=1)
-				{
-					$array['val']=GetValue($element['Object']);
-				}
+                if($element['Object'] != 1) {
+                    $array['val'] = GetValue($element['Object']);
+                }
                 $this->AddJsonL(array_merge($array, $override));
             }
-			if($element['Type'] == 8) { //Switch
-			
-                if($y + $switchHeigh> $yStop) {
+            if($element['Type'] == 8) { //Switch
+
+                if($y + $switchHeigh > $yStop) {
                     $y = $yStart;
                     $page++;
                 }
@@ -866,32 +829,31 @@ class openHASP extends IPSModule
                                     'h' => $h,
                                     'w' => $elementWidth
                                     );
-				if($element['Object']!=1)
-				{
-					$array['val']=intval(GetValue($element['Object']));
-				}
+                if($element['Object'] != 1) {
+                    $array['val'] = GetValue($element['Object']);
+                }
                 $this->AddJsonL(array_merge($array, $override));
             }
-			
-			if($element['Type'] == 99) { //New Page
-				$y = $yStart;
-                $page++;
-				continue;
-			}
 
-			$items[] = Array("objkey"=>"p".$page."b".$itemcount , "data"=>  Array("page"=>$page,"id"=>$itemcount,"type"=>$element['Type'],"objectId"=>$element['Object'],"caption"=>$element['Caption']));
+            if($element['Type'] == 99) { //New Page
+                $y = $yStart;
+                $page++;
+                continue;
+            }
+
+            $items[] = array("objkey" => "p".$page."b".$itemcount , "data" =>  array("page" => $page,"id" => $itemcount,"type" => $element['Type'],"objectId" => $element['Object'],"caption" => $element['Caption']));
 
             $itemcount++;
-			
-			
-            $x = $x+$elementWidth + $margin;
-		
-			$offset = $h + $element['Margin'];
-			
+
+
+            $x = $x + $elementWidth + $margin;
+
+            $offset = $h + $element['Margin'];
+
         }
-		
-		$this->SendDebug('SendCommand()', 'ElementToObjectMapping: '.json_encode($items), 0);
-		$this->WriteAttributeString("ElementToObjectMapping", json_encode($items));
+
+        $this->SendDebug('SendCommand()', 'ElementToObjectMapping: '.json_encode($items), 0);
+        $this->WriteAttributeString("ElementToObjectMapping", json_encode($items));
 
         $this->AddJsonL(array(	'page' => 1,
                                 'id' => 0,
@@ -904,7 +866,7 @@ class openHASP extends IPSModule
     }
     private function AddJsonL(array $data)
     {
-        $this->SendCommand('jsonl '.json_encode($data,JSON_UNESCAPED_SLASHES ));
+        $this->SendCommand('jsonl '.json_encode($data, JSON_UNESCAPED_SLASHES));
     }
 
     public function SetItemValue(int $page, int $objectId, int $value)
