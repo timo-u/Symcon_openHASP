@@ -641,17 +641,19 @@ class openHASP extends IPSModule
                                     'y' => $y,
                                     'h' => $h,
                                     'w' => $elementWidth,
-                                    'text' => $element['Caption'],
                                     'align' => 1);
+									
+				$text = $element['Caption'];
                 if($element['Object'] != 1) {
                     if($element['Caption'] == "") {
 
-                        $array['text'] = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
+                        $text = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-                        $array['text'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                        $text = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
                     }
                 }
-
+				$jsontext = json_decode('{"text":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
+				$array = array_merge($array,$jsontext);
                 $this->AddJsonL(array_merge($array, $override));
             }
             if($element['Type'] == 1 || ($element['Type'] == 2)) { //Button 1 /ToggleButton 2
