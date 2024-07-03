@@ -37,6 +37,7 @@ Name     | Beschreibung
 Hostname | Name des Displays zur Identifikation
 Hintergrundbeleuchtung automatisch dimmen | Dimmt die Beleuchtung im kurzen Leerlauf (idle->short) auf ca 20% ab 
 Hintergrundbeleuchtung automatisch abschalten| Schaltet die Beleuchtung im Leerlauf (idle->long) automatisch ab
+Im Ruhezustand auf Seite 1 Wechseln| Schaltet im kurzen Leerlauf auf Seite 1 um (idle->short)
 Variablen automatisch erstellen | Dadurch werden die Variablen zu Ereignissen und Variablen automatisch erstellt. 
 Display Inhalt schreiben | Entfernt die Elemente auf dem Display und erstellt die nachfolgen UI_Elemente selbstständig. 
 Ui-Elemente | Liste aus Elementen, die auf dem Displayangezeigt werden sollen. 

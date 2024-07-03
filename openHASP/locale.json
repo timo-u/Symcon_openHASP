@@ -4,6 +4,7 @@
             "Hostname": "Gerätename",
             "Auto Dim Backlight": "Hintergrundbeleuchtung automatisch dimmen",
             "Auto Shutdow Backlight": "Hintergrundbeleuchtung automatisch abschalten",
+            "Page 1 on Idle": "Im Ruhezustand auf Seite 1 Wechseln",
             "Auto Create Variables": "Variablen automatisch erstellen",
             "Write Display Content": "Display Inhalt schreiben",
             "Ui-Elements": "Ui-Elemente",

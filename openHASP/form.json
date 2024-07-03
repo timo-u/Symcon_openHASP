@@ -172,6 +172,11 @@
                     "name": "AutoShutdownBacklight",
                     "caption": "Auto Shutdow Backlight"
                 },
+				{
+                    "type": "CheckBox",
+                    "name": "PageOneOnIdle",
+                    "caption": "Page 1 on Idle"
+                },
                 {
                     "type": "CheckBox",
                     "name": "AutoCreateVariable",
@@ -301,10 +306,6 @@
             "type": "Button",
             "label": "Rewrite Display",
             "onClick": "OHASP_RewriteDisplay($id);"
-        },
-        {
-            "type": "Label",
-            "caption": "Dokumentation: https://github.com/timo-u/Symcon_openHASP/tree/main/openHASP"
         }
     ],
     "status": []

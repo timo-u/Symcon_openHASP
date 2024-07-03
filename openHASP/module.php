@@ -12,6 +12,8 @@ class openHASP extends IPSModule
 
         $this->RegisterPropertyBoolean('AutoDimBacklight', false);
         $this->RegisterPropertyBoolean('AutoShutdownBacklight', false);
+		$this->RegisterPropertyBoolean('PageOneOnIdle', false);
+		
         $this->RegisterPropertyBoolean('AutoCreateVariable', false);
 
         $this->RegisterPropertyBoolean('WriteDisplayContent', false);
@@ -289,8 +291,9 @@ class openHASP extends IPSModule
                     $this->SendCommand('backlight=0');
                 }
             }
-
-
+			if($this->ReadPropertyBoolean('AutoDimBacklight')&& $data=="short") {
+				$this->SendCommand('page 1');
+			}
         }
         if($topic == "backlight") {
             $data = json_decode($data);
@@ -837,6 +840,7 @@ class openHASP extends IPSModule
                         $array['value_str'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
                     }
                 }
+				//$jsontext = json_decode('{"value_str":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
 				
                 $this->AddJsonL(array_merge($array, $override));
             }
