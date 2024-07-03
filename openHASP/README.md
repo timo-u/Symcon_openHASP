@@ -79,7 +79,7 @@ Slider | Integer  | Die Min- und Max-Werte werden über "Parameter überschreibe
 Dropdown | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
 Arc | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
 LED Inicator | Integer, Boolean | LED Anzeige. Helligkeit wird von 0...255 angeggeben. Bei zuordnung einer boolschen Variable wird zwischen aus und an gewechselt 
-Line Meter | Integer  | Diagramm für Prozentualen Ausschlag  
+Line Meter | Integer  | Diagramm für Prozentualen Ausschlag. Die Beschriftung kann mit Variablen arbeiten. Z.B. %d W für einen Integer-Wert mit der Einheit Watt.
 Switch | Boolean  | Schalter
 New Page | -  | Erstellt kein Element sonden führt zu einem Seitenumbruch
 

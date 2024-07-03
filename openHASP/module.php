@@ -439,7 +439,7 @@ class openHASP extends IPSModule
 
                 $this->SendDebug('FoundMapping()', json_encode($Element), 0);
 
-                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5 || $Element->type == 7) { // Bei Toggel-Button, Slider, Arc, LineMeter
+                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5 ) { // Bei Toggel-Button, Slider, Arc, LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                 }
                 if($Element->type == 6) { // Bei LED Indicator
@@ -461,6 +461,14 @@ class openHASP extends IPSModule
                     } else {
                         $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
                     }
+                }
+				if($Element->type == 7) { //Bei LineMeter
+				$this->SetItemValue($Element->page, $Element->id, intval($data[0]));
+                    if($Element->caption == "") {
+                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
+                    } else {
+						$this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                        }
                 }
                 if($Element->type == 4) { //  Bei Dropdown
                     $var = IPS_GetVariable($sendId);
@@ -817,11 +825,19 @@ class openHASP extends IPSModule
                                     'y' => $y,
                                     'h' => $h,
                                     'w' => $linemeterHeigh,
-									'value_str' => $element['Caption']
+                                    'value_str' => $element['Caption']
                                     );
+                
                 if($element['Object'] != 1) {
-                    $array['val'] = GetValue($element['Object']);
+					$array['val'] = GetValue($element['Object']);
+                    if($element['Caption'] == "") {
+
+                        $array['value_str'] = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
+                    } else {
+                        $array['value_str'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                    }
                 }
+				
                 $this->AddJsonL(array_merge($array, $override));
             }
             if($element['Type'] == 8) { //Switch
