@@ -6,181 +6,161 @@
             "caption": "Hostname"
         },
         {
-            "type": "List",
-            "name": "UiElements",
-            "caption": "Ui-Elements",
-            "rowCount": 10,
-            "add": true,
-            "delete": true,
-            "changeOrder": true,
-            "columns": [
-                {
-                    "caption": "Type",
-                    "name": "Type",
-                    "width": "150px",
-                    "save": true,
-                    "visible": true,
-                    "add": 0,
-                    "edit": {
-                        "type": "Select",
-                        "options": [
-                            {
-                                "caption": "Label",
-                                "value": 0
-                            },
-                            {
-                                "caption": "Button",
-                                "value": 1
-                            },
-                            {
-                                "caption": "Toggle Button",
-                                "value": 2
-                            },
-                            {
-                                "caption": "Slider",
-                                "value": 3
-                            },
-                            {
-                                "caption": "Dropdown",
-                                "value": 4
-                            },
-                            {
-                                "caption": "Arc",
-                                "value": 5
-                            },
-                            {
-                                "caption": "LED Inicator",
-                                "value": 6
-                            },
-                            {
-                                "caption": "Line Meter",
-                                "value": 7
-                            },
-                            {
-                                "caption": "Switch",
-                                "value": 8
-                            },
-                            {
-                                "caption": "New Page",
-                                "value": 99
-                            }
-                        ]
-                    }
-                },
-                {
-                    "caption": "Caption",
-                    "name": "Caption",
-                    "width": "200px",
-                    "save": true,
-                    "visible": true,
-                    "add": "",
-                    "edit": {
-                        "type": "ValidationTextBox"
-                    }
-                },
-                {
-                    "caption": "Override Parameter",
-                    "name": "OverrideParameter",
-                    "width": "200px",
-                    "save": true,
-                    "visible": true,
-                    "add": "{}",
-                    "edit": {
-                        "type": "ValidationTextBox"
-                    }
-                },
-                {
-                    "caption": "Margin",
-                    "name": "Margin",
-                    "width": "100px",
-                    "save": true,
-                    "visible": true,
-                    "add": 10,
-                    "edit": {
-                        "type": "NumberSpinner"
-                    }
-                },
-                {
-                    "caption": "Width",
-                    "name": "Width",
-                    "width": "100px",
-                    "save": true,
-                    "visible": true,
-                    "add": 12,
-                    "edit": {
-                        "type": "Select",
-                        "options": [
-                            {
-                                "caption": "1/1",
-                                "value": 12
-                            },
-                            {
-                                "caption": "5/6",
-                                "value": 10
-                            },
-                            {
-                                "caption": "3/4",
-                                "value": 9
-                            },
-                            {
-                                "caption": "2/3",
-                                "value": 8
-                            },
-                            {
-                                "caption": "1/2",
-                                "value": 6
-                            },
-                            {
-                                "caption": "1/3",
-                                "value": 4
-                            },
-                            {
-                                "caption": "1/4",
-                                "value": 3
-                            },
-                            {
-                                "caption": "1/6",
-                                "value": 2
-                            }
-                        ]
-                    }
-                },
-                {
-                    "caption": "Object",
-                    "name": "Object",
-                    "width": "200px",
-                    "save": true,
-                    "visible": true,
-                    "add": 1,
-                    "edit": {
-                        "type": "SelectObject"
-                    }
-                }
-            ]
-        },
-        {
             "type": "ExpansionPanel",
-            "caption": "Weitere Einstellungen",
+            "caption": "Automatische Erstellung der Visualisierung",
             "items": [
                 {
-                    "type": "CheckBox",
-                    "name": "AutoDimBacklight",
-                    "caption": "Auto Dim Backlight"
-                },
-                {
-                    "type": "CheckBox",
-                    "name": "AutoShutdownBacklight",
-                    "caption": "Auto Shutdow Backlight"
-                },
-				{
-                    "type": "CheckBox",
-                    "name": "PageOneOnIdle",
-                    "caption": "Page 1 on Idle"
-                },
-                {
-                    "type": "CheckBox",
-                    "name": "AutoCreateVariable",
-                    "caption": "Auto Create Variables"
+                    "type": "List",
+                    "name": "UiElements",
+                    "caption": "Ui-Elements",
+                    "rowCount": 10,
+                    "add": true,
+                    "delete": true,
+                    "changeOrder": true,
+                    "columns": [
+                        {
+                            "caption": "Type",
+                            "name": "Type",
+                            "width": "150px",
+                            "save": true,
+                            "visible": true,
+                            "add": 0,
+                            "edit": {
+                                "type": "Select",
+                                "options": [
+                                    {
+                                        "caption": "Label",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "Button",
+                                        "value": 1
+                                    },
+                                    {
+                                        "caption": "Toggle Button",
+                                        "value": 2
+                                    },
+                                    {
+                                        "caption": "Slider",
+                                        "value": 3
+                                    },
+                                    {
+                                        "caption": "Dropdown",
+                                        "value": 4
+                                    },
+                                    {
+                                        "caption": "Arc",
+                                        "value": 5
+                                    },
+                                    {
+                                        "caption": "LED Inicator",
+                                        "value": 6
+                                    },
+                                    {
+                                        "caption": "Line Meter",
+                                        "value": 7
+                                    },
+                                    {
+                                        "caption": "Switch",
+                                        "value": 8
+                                    },
+                                    {
+                                        "caption": "New Page",
+                                        "value": 99
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "caption": "Caption",
+                            "name": "Caption",
+                            "width": "200px",
+                            "save": true,
+                            "visible": true,
+                            "add": "",
+                            "edit": {
+                                "type": "ValidationTextBox"
+                            }
+                        },
+                        {
+                            "caption": "Override Parameter",
+                            "name": "OverrideParameter",
+                            "width": "200px",
+                            "save": true,
+                            "visible": true,
+                            "add": "{}",
+                            "edit": {
+                                "type": "ValidationTextBox"
+                            }
+                        },
+                        {
+                            "caption": "Margin",
+                            "name": "Margin",
+                            "width": "100px",
+                            "save": true,
+                            "visible": true,
+                            "add": 10,
+                            "edit": {
+                                "type": "NumberSpinner"
+                            }
+                        },
+                        {
+                            "caption": "Width",
+                            "name": "Width",
+                            "width": "100px",
+                            "save": true,
+                            "visible": true,
+                            "add": 12,
+                            "edit": {
+                                "type": "Select",
+                                "options": [
+                                    {
+                                        "caption": "1/1",
+                                        "value": 12
+                                    },
+                                    {
+                                        "caption": "5/6",
+                                        "value": 10
+                                    },
+                                    {
+                                        "caption": "3/4",
+                                        "value": 9
+                                    },
+                                    {
+                                        "caption": "2/3",
+                                        "value": 8
+                                    },
+                                    {
+                                        "caption": "1/2",
+                                        "value": 6
+                                    },
+                                    {
+                                        "caption": "1/3",
+                                        "value": 4
+                                    },
+                                    {
+                                        "caption": "1/4",
+                                        "value": 3
+                                    },
+                                    {
+                                        "caption": "1/6",
+                                        "value": 2
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "caption": "Object",
+                            "name": "Object",
+                            "width": "200px",
+                            "save": true,
+                            "visible": true,
+                            "add": 1,
+                            "edit": {
+                                "type": "SelectObject"
+                            }
+                        }
+                    ]
                 },
                 {
                     "type": "CheckBox",
@@ -287,11 +267,42 @@
                         }
                     ]
                 }
-				,
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Manuelles Verknüpfen der Daten",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "AutoCreateVariable",
+                    "caption": "Auto Create Variables"
+                },
                 {
                     "type": "SelectScript",
                     "name": "MessageReceivedScript",
                     "caption": "Message received Script"
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Weitere Einstellungen",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "AutoDimBacklight",
+                    "caption": "Auto Dim Backlight"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "AutoShutdownBacklight",
+                    "caption": "Auto Shutdow Backlight"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "PageOneOnIdle",
+                    "caption": "Page 1 on Idle"
                 }
             ]
         }
