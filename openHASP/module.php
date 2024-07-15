@@ -12,17 +12,18 @@ class openHASP extends IPSModule
 
         $this->RegisterPropertyBoolean('AutoDimBacklight', false);
         $this->RegisterPropertyBoolean('AutoShutdownBacklight', false);
-		$this->RegisterPropertyBoolean('PageOneOnIdle', false);
-		
+        $this->RegisterPropertyBoolean('PageOneOnIdle', false);
+
         $this->RegisterPropertyBoolean('AutoCreateVariable', false);
 
         $this->RegisterPropertyBoolean('WriteDisplayContent', false);
-        $this->RegisterPropertyString('UiElements', "");
+        $this->RegisterPropertyString('UiElements', "[]");
+        $this->RegisterPropertyString('Mapping', "[]");
         $this->RegisterPropertyString('Parameter', "");
         $this->RegisterPropertyBoolean('DisplayDateTimeHeader', true);
         $this->RegisterPropertyBoolean('DisplayPageControlFooter', true);
-		
-		$this->RegisterPropertyInteger('MessageReceivedScript', 1);
+
+        $this->RegisterPropertyInteger('MessageReceivedScript', 1);
 
         $this->RegisterAttributeString("ElementToObjectMapping", "{}");
 
@@ -147,6 +148,19 @@ class openHASP extends IPSModule
 
             $count++;
         }
+
+        $Mapping = json_decode($this->ReadPropertyString("Mapping"), true);
+        foreach ($Mapping as &$element) {
+
+            if($element['Object'] != 1) {
+                $this->RegisterReference($element['Object']);
+
+                $this->RegisterMessage($element['Object'], VM_UPDATE);
+
+            }
+        }
+
+
     }
 
     public function GetConfigurationForm()
@@ -158,8 +172,9 @@ class openHASP extends IPSModule
         $this->SendDebug('GetConfigurationForm()', 'UI-Elements:'. $UiElements, 0);
 
         //Only add default element if we do not have anything in persistence
-        if($UiElements == "" || $UiElements == "[]") {
-            $data->elements[1]->values[] = array(
+        /*
+       if($UiElements == "" || $UiElements == "[]") {
+            $data->elements[1]->elements[0]->values[] = array(
                 "Type" => 0,
                 "Caption" => "#32C9AC Symcon",
                 "OverrideParameter" => '{"text_font":50,"h":60}',
@@ -167,7 +182,7 @@ class openHASP extends IPSModule
                 "Object" => 1
             );
         }
-
+*/
         return json_encode($data);
 
     }
@@ -255,8 +270,8 @@ class openHASP extends IPSModule
         $this->SendDebug('ReceiveData()', 'Topic: '.$topic . ' Data: '.$data, 0);
 
         $this->HandleData($topic, $data);
-		
-		
+
+
 
     }
 
@@ -291,9 +306,9 @@ class openHASP extends IPSModule
                     $this->SendCommand('backlight=0');
                 }
             }
-			if($this->ReadPropertyBoolean('PageOneOnIdle')&& $data=="short") {
-				$this->SendCommand('page 1');
-			}
+            if($this->ReadPropertyBoolean('PageOneOnIdle') && $data == "short") {
+                $this->SendCommand('page 1');
+            }
         }
         if($topic == "backlight") {
             $data = json_decode($data);
@@ -403,13 +418,13 @@ class openHASP extends IPSModule
                     $this->SetValue($key, $data->color);
                 }
             }
-			
-			$scriptid = $this->ReadPropertyInteger("MessageReceivedScript");
-			if($scriptid != 1) {
-				IPS_RunScriptEx($scriptid, Array( "Data" => json_encode(Array("Topic" => $topic,"Data" => $data))));
-			}
+
+            $scriptid = $this->ReadPropertyInteger("MessageReceivedScript");
+            if($scriptid != 1) {
+                IPS_RunScriptEx($scriptid, array( "Data" => json_encode(array("Topic" => $topic,"Data" => $data))));
+            }
         }
-		
+
         if($topic == "statusupdate") {
 
         }
@@ -442,7 +457,7 @@ class openHASP extends IPSModule
 
                 $this->SendDebug('FoundMapping()', json_encode($Element), 0);
 
-                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5 ) { // Bei Toggel-Button, Slider, Arc, LineMeter
+                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5) { // Bei Toggel-Button, Slider, Arc, LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                 }
                 if($Element->type == 6) { // Bei LED Indicator
@@ -462,21 +477,21 @@ class openHASP extends IPSModule
                     if($Element->caption == "") {
                         $this->SetItemText($Element->page, $Element->id, strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-						if(str_contains($Element->caption, "$$")) {
-						$this->SetItemText($Element->page, $Element->id, str_replace("$$", GetValueFormatted( $sendId),$Element->caption )); // $$ verwendet den Formatierten Variablenwert
-						
-						} else {
-                        $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-						}
-				   }
+                        if(str_contains($Element->caption, "$$")) {
+                            $this->SetItemText($Element->page, $Element->id, str_replace("$$", GetValueFormatted($sendId), $Element->caption)); // $$ verwendet den Formatierten Variablenwert
+
+                        } else {
+                            $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                        }
+                    }
                 }
-				if($Element->type == 7) { //Bei LineMeter
-				$this->SetItemValue($Element->page, $Element->id, intval($data[0]));
+                if($Element->type == 7) { //Bei LineMeter
+                    $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                     if($Element->caption == "") {
                         $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-						$this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-                        }
+                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                    }
                 }
                 if($Element->type == 4) { //  Bei Dropdown
                     $var = IPS_GetVariable($sendId);
@@ -505,407 +520,417 @@ class openHASP extends IPSModule
     public function RewriteDisplay()
     {
         $this->SendDebug('RewriteDisplay()', '', 0);
-        if(!$this->ReadPropertyBoolean('WriteDisplayContent')) {
-            return;
-        }
-
-        $displayheight = $this->GetParameter("DisplayHeight");
-        $displaywidth = $this->GetParameter("DisplayWidth");
-        $margin = $this->GetParameter("MarginSide");
-        $labelHeight = $this->GetParameter("LabelHeight");
-        $sliderHeigh = $this->GetParameter("SliderHeight");
-        $buttonHeight = $this->GetParameter("ButtonHeight");
-        $SliderMargin = $this->GetParameter("SliderMargin");
-        $arcHeigh = $this->GetParameter("ArcHeight");
-        $ledHeigh = $this->GetParameter("LedHeight");
-        $linemeterHeigh = $this->GetParameter("LineMeterHeight");
-        $switchHeigh = $this->GetParameter("SwitchHeight");
-
-
-        $DisplayMarginTop = $this->GetParameter("DisplayMarginTop");
-        $DisplayMarginBottom = $this->GetParameter("DisplayMarginBottom");
-
-        $oneElementwidth = $displaywidth - (2 * $margin);
-        $twoElementwidth = ($displaywidth - (3 * $margin)) / 2;
-        $yStart = $DisplayMarginTop;
-        $yStop = $displayheight - $DisplayMarginBottom;
-        $page = 1;
-        $offset = 0;
-
-        $this->SendCommand('clearpage all');
-
-        if($this->ReadPropertyBoolean('DisplayDateTimeHeader')) {
-            $yStart = $labelHeight + $margin;
-            $text = json_decode('{"template":"\uE0ED %d.%m.%Y"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
-            $this->AddJsonL(array_merge(array(	'obj' => 'label',
-                                            'page' => 0,
-                                            'id' => 200,
-                                            'x' => $margin,
-                                            'y' => 0,
-                                            'h' => $labelHeight,
-                                            'w' => $twoElementwidth,
-                                            'align' => 0,
-                                            'text_color' => '#FFFFFF'), $text));
-
-            $text = json_decode('{"template":"\uE150 %H:%M"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
-            $this->AddJsonL(array_merge(array(	'obj' => 'label',
-                                            'page' => 0,
-                                            'id' => 201,
-                                            'x' => $displaywidth - $twoElementwidth - $margin,
-                                            'y' => 0,
-                                            'h' => $labelHeight,
-                                            'w' => $twoElementwidth,
-                                            'align' => 'right',
-                                            'text_color' => '#FFFFFF'), $text));
-
-        }
-
-        if($this->ReadPropertyBoolean('DisplayPageControlFooter')) {
-            $yStop = $displayheight - $margin - $buttonHeight;
-            $text = json_decode('{"text":"\uE04D"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
-            $this->AddJsonL(array_merge(array(	'obj' => 'btn',
-                                            'page' => 0,
-                                            'id' => 10,
-                                            'x' => $margin,
-                                            'y' => $displayheight - $buttonHeight,
-                                            'h' => $buttonHeight,
-                                            'w' => $twoElementwidth,
-                                            'toggle' => false,
-                                            'text_font' => 32,
-                                            'action' => array('down' => 'page prev'),
-                                            'mode' => 'break',
-                                            'align' => 1,
-                                            'text_color' => '#FFFFFF'), $text));
-
-            $text = json_decode('{"text":"\uE054"}', true);
-            $this->AddJsonL(array_merge(array(	'obj' => 'btn',
-                                            'page' => 0,
-                                            'id' => 11,
-                                            'x' => $displaywidth - $twoElementwidth - $margin,
-                                            'y' => $displayheight - $buttonHeight,
-                                            'h' => $buttonHeight,
-                                            'w' => $twoElementwidth,
-                                            'toggle' => false,
-                                            'text_font' => 32,
-                                            'action' => array('down' => 'page next'),
-                                            'mode' => 'break',
-                                            'align' => 1,
-                                            'text_color' => '#FFFFFF'), $text));
-        }
-
-        $UiElements = json_decode($this->ReadPropertyString("UiElements"), true);
-        $itemcount = 1;
-        $y = $yStart;
         $items = array();
-        $yend = 0;
-        $x = $margin;
 
-        foreach ($UiElements as &$element) {
+        if($this->ReadPropertyBoolean('WriteDisplayContent')) {
 
-            $this->SendDebug('RewriteDisplay()', 'Caption: '.print_r($element, true), 0);
+            $displayheight = $this->GetParameter("DisplayHeight");
+            $displaywidth = $this->GetParameter("DisplayWidth");
+            $margin = $this->GetParameter("MarginSide");
+            $labelHeight = $this->GetParameter("LabelHeight");
+            $sliderHeigh = $this->GetParameter("SliderHeight");
+            $buttonHeight = $this->GetParameter("ButtonHeight");
+            $SliderMargin = $this->GetParameter("SliderMargin");
+            $arcHeigh = $this->GetParameter("ArcHeight");
+            $ledHeigh = $this->GetParameter("LedHeight");
+            $linemeterHeigh = $this->GetParameter("LineMeterHeight");
+            $switchHeigh = $this->GetParameter("SwitchHeight");
 
 
-            switch($element['Width']) {
-                case 12:	// 	voll
-                    $elementWidth = $displaywidth - (2 * $margin);
-                    break;
-                case 10: //	5/6
-                    $elementWidth = ($displaywidth - (2 * $margin)) / 6 * 5;
-                    break;
-                case 9: //	3/4
-                    $elementWidth = ($displaywidth - (2 * $margin)) / 4 * 3;
-                    break;
-                case 8:// 	2/3
-                    $elementWidth = ($displaywidth - (1 * $margin)) / 3 * 2;
-                    break;
-                case 6: //	1/2
-                    $elementWidth = ($displaywidth - (3 * $margin)) / 2;
-                    break;
-                case 4: //	1/3
-                    $elementWidth = ($displaywidth - (4 * $margin)) / 3;
-                    break;
-                case 3:	// 	1/4
-                    $elementWidth = ($displaywidth - (5 * $margin)) / 4;
-                    break;
-                case 2:	// 	1/6
-                    $elementWidth = ($displaywidth - (7 * $margin)) / 6;
-                    break;
-                default:
-                    $elementWidth = ($displaywidth - (2 * $margin));
+            $DisplayMarginTop = $this->GetParameter("DisplayMarginTop");
+            $DisplayMarginBottom = $this->GetParameter("DisplayMarginBottom");
+
+            $oneElementwidth = $displaywidth - (2 * $margin);
+            $twoElementwidth = ($displaywidth - (3 * $margin)) / 2;
+            $yStart = $DisplayMarginTop;
+            $yStop = $displayheight - $DisplayMarginBottom;
+            $page = 1;
+            $offset = 0;
+
+            $this->SendCommand('clearpage all');
+
+            if($this->ReadPropertyBoolean('DisplayDateTimeHeader')) {
+                $yStart = $labelHeight + $margin;
+                $text = json_decode('{"template":"\uE0ED %d.%m.%Y"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
+                $this->AddJsonL(array_merge(array(	'obj' => 'label',
+                                                'page' => 0,
+                                                'id' => 200,
+                                                'x' => $margin,
+                                                'y' => 0,
+                                                'h' => $labelHeight,
+                                                'w' => $twoElementwidth,
+                                                'align' => 0,
+                                                'text_color' => '#FFFFFF'), $text));
+
+                $text = json_decode('{"template":"\uE150 %H:%M"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
+                $this->AddJsonL(array_merge(array(	'obj' => 'label',
+                                                'page' => 0,
+                                                'id' => 201,
+                                                'x' => $displaywidth - $twoElementwidth - $margin,
+                                                'y' => 0,
+                                                'h' => $labelHeight,
+                                                'w' => $twoElementwidth,
+                                                'align' => 'right',
+                                                'text_color' => '#FFFFFF'), $text));
+
             }
 
-            if($x + $elementWidth <= $displaywidth) {
+            if($this->ReadPropertyBoolean('DisplayPageControlFooter')) {
+                $yStop = $displayheight - $margin - $buttonHeight;
+                $text = json_decode('{"text":"\uE04D"}', true); // Wenn das Zeichen in das Array codiert ist werden die Symbole als Text angezeigt
+                $this->AddJsonL(array_merge(array(	'obj' => 'btn',
+                                                'page' => 0,
+                                                'id' => 10,
+                                                'x' => $margin,
+                                                'y' => $displayheight - $buttonHeight,
+                                                'h' => $buttonHeight,
+                                                'w' => $twoElementwidth,
+                                                'toggle' => false,
+                                                'text_font' => 32,
+                                                'action' => array('down' => 'page prev'),
+                                                'mode' => 'break',
+                                                'align' => 1,
+                                                'text_color' => '#FFFFFF'), $text));
 
-            } else {
-                $y = $y + $offset; // Wenn neue Zeile dann Offset Margin + Elementhöhe zu Y adieren.
-                $x = $margin; // links beginnen
+                $text = json_decode('{"text":"\uE054"}', true);
+                $this->AddJsonL(array_merge(array(	'obj' => 'btn',
+                                                'page' => 0,
+                                                'id' => 11,
+                                                'x' => $displaywidth - $twoElementwidth - $margin,
+                                                'y' => $displayheight - $buttonHeight,
+                                                'h' => $buttonHeight,
+                                                'w' => $twoElementwidth,
+                                                'toggle' => false,
+                                                'text_font' => 32,
+                                                'action' => array('down' => 'page next'),
+                                                'mode' => 'break',
+                                                'align' => 1,
+                                                'text_color' => '#FFFFFF'), $text));
             }
 
-            try {
-                $override = json_decode($element['OverrideParameter'], true);
-            } catch (Exception $e) {
-                $this->SendDebug('RewriteDisplay() Fehler', 'Element: ' .$itemcount .' Fehler in OverrideParameter: '.$element['OverrideParameter'], 0);
-            }
-            if ($override == null) {
-                $override = array();
-            }
+            $UiElements = json_decode($this->ReadPropertyString("UiElements"), true);
+            $itemcount = 1;
+            $y = $yStart;
+
+            $yend = 0;
+            $x = $margin;
+
+            foreach ($UiElements as &$element) {
+
+                $this->SendDebug('RewriteDisplay()', 'Caption: '.print_r($element, true), 0);
 
 
-
-
-            if($element['Type'] == 0) { //Label
-                $h = $labelHeight;
-                if($y + $h > $yStop) {
-                    $y = $yStart;
-                    $page++;
+                switch($element['Width']) {
+                    case 12:	// 	voll
+                        $elementWidth = $displaywidth - (2 * $margin);
+                        break;
+                    case 10: //	5/6
+                        $elementWidth = ($displaywidth - (2 * $margin)) / 6 * 5;
+                        break;
+                    case 9: //	3/4
+                        $elementWidth = ($displaywidth - (2 * $margin)) / 4 * 3;
+                        break;
+                    case 8:// 	2/3
+                        $elementWidth = ($displaywidth - (1 * $margin)) / 3 * 2;
+                        break;
+                    case 6: //	1/2
+                        $elementWidth = ($displaywidth - (3 * $margin)) / 2;
+                        break;
+                    case 4: //	1/3
+                        $elementWidth = ($displaywidth - (4 * $margin)) / 3;
+                        break;
+                    case 3:	// 	1/4
+                        $elementWidth = ($displaywidth - (5 * $margin)) / 4;
+                        break;
+                    case 2:	// 	1/6
+                        $elementWidth = ($displaywidth - (7 * $margin)) / 6;
+                        break;
+                    default:
+                        $elementWidth = ($displaywidth - (2 * $margin));
                 }
-                $array = array(		'obj' => 'label',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'w' => $elementWidth,
-                                    'align' => 1);
-									
-				$text = $element['Caption'];
-                if($element['Object'] != 1) {
-                    if($element['Caption'] == "") {
 
-                        $text = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
-                    } else {
-						if(str_contains($element['Caption'], "$$")) {
-						$text =  str_replace("$$", GetValueFormatted($element['Object']),$element['Caption'] ) // $$ verwendet den Formatierten Variablenwert
-						
-						} else {
-                        $text = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-						}
-				   }
+                if($x + $elementWidth <= $displaywidth) {
+
+                } else {
+                    $y = $y + $offset; // Wenn neue Zeile dann Offset Margin + Elementhöhe zu Y adieren.
+                    $x = $margin; // links beginnen
                 }
-				$jsontext = json_decode('{"text":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
-				$array = array_merge($array,$jsontext);
-                $this->AddJsonL(array_merge($array, $override));
-            }
-            if($element['Type'] == 1 || ($element['Type'] == 2)) { //Button 1 /ToggleButton 2
-                $h = $buttonHeight;
-                if($y + $h > $yStop) {
-                    $y = $yStart;
-                    $page++;
+
+                try {
+                    $override = json_decode($element['OverrideParameter'], true);
+                } catch (Exception $e) {
+                    $this->SendDebug('RewriteDisplay() Fehler', 'Element: ' .$itemcount .' Fehler in OverrideParameter: '.$element['OverrideParameter'], 0);
                 }
-                $array = array(	'obj' => 'btn',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'w' => $elementWidth,
-                                    'toggle' => ($element['Type'] == 2),
-                                    'text' => $element['Caption'],
-                                    'align' => 1);
-                if($element['Type'] == 2 && $element['Object'] != 1) {
-                    $array['val'] = intval(GetValue($element['Object']));
+                if ($override == null) {
+                    $override = array();
                 }
 
 
-                $this->AddJsonL(array_merge($array, $override));
-            }
-
-            if($element['Type'] == 3) { //Slider
-
-                if($y + $sliderHeigh + $SliderMargin > $yStop) {
-                    $y = $yStart;
-                    $page++;
-                }
 
 
-                $h = $sliderHeigh;
-                $array = array(	'obj' => 'slider',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y + $SliderMargin,
-                                    'h' => $h,
-                                    'w' => $elementWidth
-                                    );
-                if($element['Object'] != 1) {
-                    $array['val'] = GetValue($element['Object']);
-                }
-                $this->AddJsonL(array_merge($array, $override));
-                $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
-            }
-            if($element['Type'] == 4) { //Dropdown
-                $h = $buttonHeight;
-                if($y + $h > $yStop) {
-                    $y = $yStart;
-                    $page++;
-                }
-
-                $array = array(	'obj' => 'dropdown',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'w' => $elementWidth
-                                    );
-                if($element['Object'] != 1) {
-                    $array['val'] = GetValue($element['Object']);
-
-                    $var = IPS_GetVariable($element['Object']);
-                    $profile = IPS_GetVariableProfile($var['VariableProfile']);
-                    $list = array();
-                    foreach ($profile['Associations'] as $association) {
-                        $list[] = $association['Name'];
+                if($element['Type'] == 0) { //Label
+                    $h = $labelHeight;
+                    if($y + $h > $yStop) {
+                        $y = $yStart;
+                        $page++;
                     }
-                    $array['options'] = implode("\n", $list);
+                    $array = array(		'obj' => 'label',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'w' => $elementWidth,
+                                        'align' => 1);
 
+                    $text = $element['Caption'];
+                    if($element['Object'] != 1) {
+                        if($element['Caption'] == "") {
 
-                }
-                $this->AddJsonL(array_merge($array, $override));
-
-            }
-            if($element['Type'] == 5) { //Arc
-
-                if($y + $arcHeigh > $yStop) {
-                    $y = $yStart;
-                    $page++;
-                }
-
-
-                $h = $arcHeigh;
-                $array = array(	'obj' => 'arc',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'start_angle' => 135,
-                                    'end_angle' => 45,
-                                    'start_angle10' => 135,
-                                    'end_angle10' => 45,
-                                    'w' => $arcHeigh
-                                    );
-                if($element['Object'] != 1) {
-                    $array['val'] = GetValue($element['Object']);
-                }
-                $this->AddJsonL(array_merge($array, $override));
-            }
-            if($element['Type'] == 6) { //LED Indicator
-
-                if($y + $ledHeigh > $yStop) {
-                    $y = $yStart;
-                    $page++;
-                }
-
-
-                $h = $ledHeigh;
-                $array = array(	'obj' => 'led',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'w' => $ledHeigh,
-                                    'value_str' => $element['Caption']
-                                    );
-                if($element['Object'] != 1) {
-                    $var = IPS_GetVariable($element['Object']);
-
-                    if($var['VariableType'] == 0) { // Bei Boolscher Variable
-                        if(GetValue($element['Object'])) {
-                            $array['val'] = 255;
+                            $text = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
                         } else {
-                            $array['val'] = $this->GetParameter("LedMinValue");
+                            if(str_contains($element['Caption'], "$$")) {
+                                $text =  str_replace("$$", GetValueFormatted($element['Object']), $element['Caption']); // $$ verwendet den Formatierten Variablenwert
+
+                            } else {
+                                $text = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                            }
                         }
-                    } else {
+                    }
+                    $jsontext = json_decode('{"text":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
+                    $array = array_merge($array, $jsontext);
+                    $this->AddJsonL(array_merge($array, $override));
+                }
+                if($element['Type'] == 1 || ($element['Type'] == 2)) { //Button 1 /ToggleButton 2
+                    $h = $buttonHeight;
+                    if($y + $h > $yStop) {
+                        $y = $yStart;
+                        $page++;
+                    }
+                    $array = array(	'obj' => 'btn',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'w' => $elementWidth,
+                                        'toggle' => ($element['Type'] == 2),
+                                        'text' => $element['Caption'],
+                                        'align' => 1);
+                    if($element['Type'] == 2 && $element['Object'] != 1) {
+                        $array['val'] = intval(GetValue($element['Object']));
+                    }
+
+
+                    $this->AddJsonL(array_merge($array, $override));
+                }
+
+                if($element['Type'] == 3) { //Slider
+
+                    if($y + $sliderHeigh + $SliderMargin > $yStop) {
+                        $y = $yStart;
+                        $page++;
+                    }
+
+
+                    $h = $sliderHeigh;
+                    $array = array(	'obj' => 'slider',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y + $SliderMargin,
+                                        'h' => $h,
+                                        'w' => $elementWidth
+                                        );
+                    if($element['Object'] != 1) {
                         $array['val'] = GetValue($element['Object']);
                     }
+                    $this->AddJsonL(array_merge($array, $override));
+                    $h = $h + $SliderMargin; // zusätzlcher Abstand nach Slider
                 }
-                $this->AddJsonL(array_merge($array, $override));
-            }
-            if($element['Type'] == 7) { //LineMeter
-
-                if($y + $linemeterHeigh > $yStop) {
-                    $y = $yStart;
-                    $page++;
-                }
-
-
-                $h = $linemeterHeigh;
-                $array = array(	'obj' => 'linemeter',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'w' => $linemeterHeigh,
-                                    'value_str' => $element['Caption']
-                                    );
-                
-                if($element['Object'] != 1) {
-					$array['val'] = GetValue($element['Object']);
-                    if($element['Caption'] == "") {
-
-                        $array['value_str'] = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
-                    } else {
-                        $array['value_str'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                if($element['Type'] == 4) { //Dropdown
+                    $h = $buttonHeight;
+                    if($y + $h > $yStop) {
+                        $y = $yStart;
+                        $page++;
                     }
-                }
-				//$jsontext = json_decode('{"value_str":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
-				
-                $this->AddJsonL(array_merge($array, $override));
-            }
-            if($element['Type'] == 8) { //Switch
 
-                if($y + $switchHeigh > $yStop) {
+                    $array = array(	'obj' => 'dropdown',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'w' => $elementWidth
+                                        );
+                    if($element['Object'] != 1) {
+                        $array['val'] = GetValue($element['Object']);
+
+                        $var = IPS_GetVariable($element['Object']);
+                        $profile = IPS_GetVariableProfile($var['VariableProfile']);
+                        $list = array();
+                        foreach ($profile['Associations'] as $association) {
+                            $list[] = $association['Name'];
+                        }
+                        $array['options'] = implode("\n", $list);
+
+
+                    }
+                    $this->AddJsonL(array_merge($array, $override));
+
+                }
+                if($element['Type'] == 5) { //Arc
+
+                    if($y + $arcHeigh > $yStop) {
+                        $y = $yStart;
+                        $page++;
+                    }
+
+
+                    $h = $arcHeigh;
+                    $array = array(	'obj' => 'arc',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'start_angle' => 135,
+                                        'end_angle' => 45,
+                                        'start_angle10' => 135,
+                                        'end_angle10' => 45,
+                                        'w' => $arcHeigh
+                                        );
+                    if($element['Object'] != 1) {
+                        $array['val'] = GetValue($element['Object']);
+                    }
+                    $this->AddJsonL(array_merge($array, $override));
+                }
+                if($element['Type'] == 6) { //LED Indicator
+
+                    if($y + $ledHeigh > $yStop) {
+                        $y = $yStart;
+                        $page++;
+                    }
+
+
+                    $h = $ledHeigh;
+                    $array = array(	'obj' => 'led',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'w' => $ledHeigh,
+                                        'value_str' => $element['Caption']
+                                        );
+                    if($element['Object'] != 1) {
+                        $var = IPS_GetVariable($element['Object']);
+
+                        if($var['VariableType'] == 0) { // Bei Boolscher Variable
+                            if(GetValue($element['Object'])) {
+                                $array['val'] = 255;
+                            } else {
+                                $array['val'] = $this->GetParameter("LedMinValue");
+                            }
+                        } else {
+                            $array['val'] = GetValue($element['Object']);
+                        }
+                    }
+                    $this->AddJsonL(array_merge($array, $override));
+                }
+                if($element['Type'] == 7) { //LineMeter
+
+                    if($y + $linemeterHeigh > $yStop) {
+                        $y = $yStart;
+                        $page++;
+                    }
+
+
+                    $h = $linemeterHeigh;
+                    $array = array(	'obj' => 'linemeter',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'w' => $linemeterHeigh,
+                                        'value_str' => $element['Caption']
+                                        );
+
+                    if($element['Object'] != 1) {
+                        $array['val'] = GetValue($element['Object']);
+                        if($element['Caption'] == "") {
+
+                            $array['value_str'] = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
+                        } else {
+                            $array['value_str'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                        }
+                    }
+                    //$jsontext = json_decode('{"value_str":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
+
+                    $this->AddJsonL(array_merge($array, $override));
+                }
+                if($element['Type'] == 8) { //Switch
+
+                    if($y + $switchHeigh > $yStop) {
+                        $y = $yStart;
+                        $page++;
+                    }
+
+
+                    $h = $switchHeigh;
+                    $array = array(	'obj' => 'switch',
+                                        'page' => $page,
+                                        'id' => $itemcount,
+                                        'x' => $x,
+                                        'y' => $y,
+                                        'h' => $h,
+                                        'w' => $elementWidth
+                                        );
+                    if($element['Object'] != 1) {
+                        $array['val'] = GetValue($element['Object']);
+                    }
+                    $this->AddJsonL(array_merge($array, $override));
+                }
+
+                if($element['Type'] == 99) { //New Page
                     $y = $yStart;
                     $page++;
+                    continue;
                 }
 
+                $items[] = array("objkey" => "p".$page."b".$itemcount , "data" =>  array("page" => $page,"id" => $itemcount,"type" => $element['Type'],"objectId" => $element['Object'],"caption" => $element['Caption']));
 
-                $h = $switchHeigh;
-                $array = array(	'obj' => 'switch',
-                                    'page' => $page,
-                                    'id' => $itemcount,
-                                    'x' => $x,
-                                    'y' => $y,
-                                    'h' => $h,
-                                    'w' => $elementWidth
-                                    );
-                if($element['Object'] != 1) {
-                    $array['val'] = GetValue($element['Object']);
-                }
-                $this->AddJsonL(array_merge($array, $override));
+                $itemcount++;
+
+
+                $x = $x + $elementWidth + $margin;
+
+                $offset = $h + $element['Margin'];
+
             }
 
-            if($element['Type'] == 99) { //New Page
-                $y = $yStart;
-                $page++;
-                continue;
-            }
-
-            $items[] = array("objkey" => "p".$page."b".$itemcount , "data" =>  array("page" => $page,"id" => $itemcount,"type" => $element['Type'],"objectId" => $element['Object'],"caption" => $element['Caption']));
-
-            $itemcount++;
 
 
-            $x = $x + $elementWidth + $margin;
 
-            $offset = $h + $element['Margin'];
+            $this->AddJsonL(array(	'page' => 1,
+                                    'id' => 0,
+                                    'prev' => $page));
+            $this->AddJsonL(array(	'page' => $page,
+                                    'id' => 0,
+                                    'next' => 1));
+        }
+
+        $Mapping = json_decode($this->ReadPropertyString("Mapping"), true);
+        foreach ($Mapping as &$element) {
+
+            $items[] = array("objkey" => "p".$element['Page']."b".$element['Id'] , "data" =>  array("page" => $element['Page'],"id" => $element['Id'],"type" => $element['Type'],"objectId" => $element['Object'],"caption" => $element['Caption']));
 
         }
+
 
         $this->SendDebug('SendCommand()', 'ElementToObjectMapping: '.json_encode($items), 0);
         $this->WriteAttributeString("ElementToObjectMapping", json_encode($items));
-
-        $this->AddJsonL(array(	'page' => 1,
-                                'id' => 0,
-                                'prev' => $page));
-        $this->AddJsonL(array(	'page' => $page,
-                                'id' => 0,
-                                'next' => 1));
-        //$this->SendCommand('page 1');
-
     }
     private function AddJsonL(array $data)
     {

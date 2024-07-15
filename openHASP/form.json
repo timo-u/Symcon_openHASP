@@ -274,6 +274,116 @@
             "caption": "Manuelles Verknüpfen der Daten",
             "items": [
                 {
+                    "type": "List",
+                    "name": "Mapping",
+                    "caption": "Manual Mapping:",
+                    "rowCount": 10,
+                    "add": true,
+                    "delete": true,
+                    "changeOrder": true,
+                    "columns": [
+                        {
+                            "caption": "Type",
+                            "name": "Type",
+                            "width": "100px",
+                            "save": true,
+                            "visible": true,
+                            "add": 0,
+                            "edit": {
+                                "type": "Select",
+                                "options": [
+                                    {
+                                        "caption": "String (text)",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "Script",
+                                        "value": 1
+                                    },
+                                    {
+                                        "caption": "Bool Value (val)",
+                                        "value": 2
+                                    },
+                                    {
+                                        "caption": "Integer Value (val)",
+                                        "value": 3
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "caption": "Page",
+                            "name": "Page",
+                            "width": "50px",
+                            "save": true,
+                            "visible": true,
+                            "add": 1,
+                            "edit": {
+                                "type": "NumberSpinner",
+                                "minimum": 0,
+                                "maximum": 12
+                            }
+                        },
+                        {
+                            "caption": "Id",
+                            "name": "Id",
+                            "width": "50px",
+                            "save": true,
+                            "visible": true,
+                            "add": 1,
+                            "edit": {
+                                "type": "NumberSpinner",
+                                "minimum": 1,
+                                "maximum": 254
+                            }
+                        },
+                        {
+                            "caption": "Caption",
+                            "name": "Caption",
+                            "width": "150px",
+                            "save": true,
+                            "visible": true,
+                            "add": "",
+                            "edit": {
+                                "type": "ValidationTextBox"
+                            }
+                        },
+                        {
+                            "caption": "Value",
+                            "name": "Value",
+                            "width": "100px",
+                            "save": true,
+                            "visible": true,
+                            "add": "",
+                            "edit": {
+                                "type": "ValidationTextBox"
+                            }
+                        },
+                        {
+                            "caption": "Factor",
+                            "name": "Factor",
+                            "width": "150px",
+                            "save": true,
+                            "visible": true,
+                            "add": "1",
+                            "edit": {
+                                "type": "ValidationTextBox"
+                            }
+                        },
+                        {
+                            "caption": "Object",
+                            "name": "Object",
+                            "width": "200px",
+                            "save": true,
+                            "visible": true,
+                            "add": 1,
+                            "edit": {
+                                "type": "SelectObject"
+                            }
+                        }
+                    ]
+                },
+                {
                     "type": "CheckBox",
                     "name": "AutoCreateVariable",
                     "caption": "Auto Create Variables"
