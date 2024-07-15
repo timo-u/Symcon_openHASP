@@ -12,8 +12,8 @@ class openHASP extends IPSModule
 
         $this->RegisterPropertyBoolean('AutoDimBacklight', false);
         $this->RegisterPropertyBoolean('AutoShutdownBacklight', false);
-        $this->RegisterPropertyBoolean('PageOneOnIdle', false);
-
+		$this->RegisterPropertyBoolean('PageOneOnIdle', false);
+		
         $this->RegisterPropertyBoolean('AutoCreateVariable', false);
 
         $this->RegisterPropertyBoolean('WriteDisplayContent', false);
@@ -21,8 +21,8 @@ class openHASP extends IPSModule
         $this->RegisterPropertyString('Parameter', "");
         $this->RegisterPropertyBoolean('DisplayDateTimeHeader', true);
         $this->RegisterPropertyBoolean('DisplayPageControlFooter', true);
-
-        $this->RegisterPropertyInteger('MessageReceivedScript', 1);
+		
+		$this->RegisterPropertyInteger('MessageReceivedScript', 1);
 
         $this->RegisterAttributeString("ElementToObjectMapping", "{}");
 
@@ -255,8 +255,8 @@ class openHASP extends IPSModule
         $this->SendDebug('ReceiveData()', 'Topic: '.$topic . ' Data: '.$data, 0);
 
         $this->HandleData($topic, $data);
-
-
+		
+		
 
     }
 
@@ -291,9 +291,9 @@ class openHASP extends IPSModule
                     $this->SendCommand('backlight=0');
                 }
             }
-            if($this->ReadPropertyBoolean('PageOneOnIdle') && $data == "short") {
-                $this->SendCommand('page 1');
-            }
+			if($this->ReadPropertyBoolean('PageOneOnIdle')&& $data=="short") {
+				$this->SendCommand('page 1');
+			}
         }
         if($topic == "backlight") {
             $data = json_decode($data);
@@ -403,13 +403,13 @@ class openHASP extends IPSModule
                     $this->SetValue($key, $data->color);
                 }
             }
-
-            $scriptid = $this->ReadPropertyInteger("MessageReceivedScript");
-            if($scriptid != 1) {
-                IPS_RunScriptEx($scriptid, array( "Data" => json_encode(array("Topic" => $topic,"Data" => $data))));
-            }
+			
+			$scriptid = $this->ReadPropertyInteger("MessageReceivedScript");
+			if($scriptid != 1) {
+				IPS_RunScriptEx($scriptid, Array( "Data" => json_encode(Array("Topic" => $topic,"Data" => $data))));
+			}
         }
-
+		
         if($topic == "statusupdate") {
 
         }
@@ -442,7 +442,7 @@ class openHASP extends IPSModule
 
                 $this->SendDebug('FoundMapping()', json_encode($Element), 0);
 
-                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5) { // Bei Toggel-Button, Slider, Arc, LineMeter
+                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5 ) { // Bei Toggel-Button, Slider, Arc, LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                 }
                 if($Element->type == 6) { // Bei LED Indicator
@@ -462,21 +462,21 @@ class openHASP extends IPSModule
                     if($Element->caption == "") {
                         $this->SetItemText($Element->page, $Element->id, strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-                        if(str_contains($Element->caption, "$$")) {
-                            $this->SetItemText($Element->page, $Element->id, str_replace("$$", GetValueFormatted($sendId), $Element->caption)); // $$ verwendet den Formatierten Variablenwert
-
-                        } else {
-                            $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-                        }
-                    }
+						if(str_contains($Element->caption, "$$")) {
+						$this->SetItemText($Element->page, $Element->id, str_replace("$$", GetValueFormatted( $sendId),$Element->caption )); // $$ verwendet den Formatierten Variablenwert
+						
+						} else {
+                        $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+						}
+				   }
                 }
-                if($Element->type == 7) { //Bei LineMeter
-                    $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
+				if($Element->type == 7) { //Bei LineMeter
+				$this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                     if($Element->caption == "") {
                         $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-                    }
+						$this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                        }
                 }
                 if($Element->type == 4) { //  Bei Dropdown
                     $var = IPS_GetVariable($sendId);
@@ -667,23 +667,23 @@ class openHASP extends IPSModule
                                     'h' => $h,
                                     'w' => $elementWidth,
                                     'align' => 1);
-
-                $text = $element['Caption'];
+									
+				$text = $element['Caption'];
                 if($element['Object'] != 1) {
                     if($element['Caption'] == "") {
 
                         $text = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-                        if(str_contains($element['Caption'], "$$")) {
-                            $this->SetItemText($Element->page, $Element->id, str_replace("$$", GetValueFormatted($element['Object']), $element['Caption'])); // $$ verwendet den Formatierten Variablenwert
-
-                        } else {
-                            $text = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-                        }
-                    }
+						if(str_contains($element['Caption'], "$$")) {
+						$text =  str_replace("$$", GetValueFormatted($element['Object']),$element['Caption'] ) // $$ verwendet den Formatierten Variablenwert
+						
+						} else {
+                        $text = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+						}
+				   }
                 }
-                $jsontext = json_decode('{"text":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
-                $array = array_merge($array, $jsontext);
+				$jsontext = json_decode('{"text":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
+				$array = array_merge($array,$jsontext);
                 $this->AddJsonL(array_merge($array, $override));
             }
             if($element['Type'] == 1 || ($element['Type'] == 2)) { //Button 1 /ToggleButton 2
@@ -841,9 +841,9 @@ class openHASP extends IPSModule
                                     'w' => $linemeterHeigh,
                                     'value_str' => $element['Caption']
                                     );
-
+                
                 if($element['Object'] != 1) {
-                    $array['val'] = GetValue($element['Object']);
+					$array['val'] = GetValue($element['Object']);
                     if($element['Caption'] == "") {
 
                         $array['value_str'] = strval(GetValue($element['Object']));// Bei Leerer Caption wird der Wert direkt geschrieben.
@@ -851,8 +851,8 @@ class openHASP extends IPSModule
                         $array['value_str'] = sprintf($element['Caption'], GetValue($element['Object'])); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
                     }
                 }
-                //$jsontext = json_decode('{"value_str":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
-
+				//$jsontext = json_decode('{"value_str":"'.$text.'"}', true); // Beim direkten schreiben des Wertes werden die Symbole escapet und nur als text angezeigt
+				
                 $this->AddJsonL(array_merge($array, $override));
             }
             if($element['Type'] == 8) { //Switch
