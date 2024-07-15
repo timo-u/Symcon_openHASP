@@ -291,7 +291,7 @@ class openHASP extends IPSModule
                     $this->SendCommand('backlight=0');
                 }
             }
-			if($this->ReadPropertyBoolean('AutoDimBacklight')&& $data=="short") {
+			if($this->ReadPropertyBoolean('PageOneOnIdle')&& $data=="short") {
 				$this->SendCommand('page 1');
 			}
         }
