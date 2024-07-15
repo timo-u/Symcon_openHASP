@@ -3,13 +3,23 @@ Das Modul stellt die Verbinung mit einem openHASP-Display über MQTT bereit.
 
 ### Inhaltsverzeichnis
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+- [openHASP](#openhasp)
+		- [Inhaltsverzeichnis](#inhaltsverzeichnis)
+		- [1. Funktionsumfang](#1-funktionsumfang)
+		- [2. Voraussetzungen](#2-voraussetzungen)
+		- [3. Software-Installation](#3-software-installation)
+		- [4. Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
+			- [Typ](#typ)
+			- [Beschriftung](#beschriftung)
+			- [Parameter überschreiben](#parameter-überschreiben)
+			- [Abstand](#abstand)
+			- [Breite](#breite)
+			- [Objekt](#objekt)
+		- [5. Statusvariablen und Profile](#5-statusvariablen-und-profile)
+			- [Statusvariablen](#statusvariablen)
+			- [Profile](#profile)
+		- [6. WebFront](#6-webfront)
+		- [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 
 ### 1. Funktionsumfang
 
@@ -32,18 +42,18 @@ Die Instanz openHASP verbidet sich mit einem openHASP Display via MQTT.
 
 __Konfigurationsseite__:
 
-Name     | Beschreibung
--------- | ------------------
-Hostname | Name des Displays zur Identifikation
-Hintergrundbeleuchtung automatisch dimmen | Dimmt die Beleuchtung im kurzen Leerlauf (idle->short) auf ca 20% ab 
-Hintergrundbeleuchtung automatisch abschalten| Schaltet die Beleuchtung im Leerlauf (idle->long) automatisch ab
-Im Ruhezustand auf Seite 1 Wechseln| Schaltet im kurzen Leerlauf auf Seite 1 um (idle->short)
-Variablen automatisch erstellen | Dadurch werden die Variablen zu Ereignissen und Variablen automatisch erstellt. 
-Display Inhalt schreiben | Entfernt die Elemente auf dem Display und erstellt die nachfolgen UI_Elemente selbstständig. 
-Ui-Elemente | Liste aus Elementen, die auf dem Displayangezeigt werden sollen. 
-Datum und Uhrzeit im Header anzeigen | Blendet auf allen Seiten das Datum und die Uhrzeit ein 
-Buttons zum Umblättern anzeigen | Blendet die Buttons zum Umblättern am unteren Bildrand ein. 
-Nachricht empfangen Skript | Wird aufgerfen wenn ein Button gedrückt oder ein Wert auf dem Display geändert wurde. Diese Funktion dient dazu die Events eigener Objekte auszuwerten, die nicht in den UI-Elementen angelegt wurden. Die Daten können im Script mit der Variable $_IPS['Data'] empfangen werden. 
+| Name                                          | Beschreibung                                                                                                                                                                                                                                                                       |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hostname                                      | Name des Displays zur Identifikation                                                                                                                                                                                                                                               |
+| Hintergrundbeleuchtung automatisch dimmen     | Dimmt die Beleuchtung im kurzen Leerlauf (idle->short) auf ca 20% ab                                                                                                                                                                                                               |
+| Hintergrundbeleuchtung automatisch abschalten | Schaltet die Beleuchtung im Leerlauf (idle->long) automatisch ab                                                                                                                                                                                                                   |
+| Im Ruhezustand auf Seite 1 Wechseln           | Schaltet im kurzen Leerlauf auf Seite 1 um (idle->short)                                                                                                                                                                                                                           |
+| Variablen automatisch erstellen               | Dadurch werden die Variablen zu Ereignissen und Variablen automatisch erstellt.                                                                                                                                                                                                    |
+| Display Inhalt schreiben                      | Entfernt die Elemente auf dem Display und erstellt die nachfolgen UI_Elemente selbstständig.                                                                                                                                                                                       |
+| Ui-Elemente                                   | Liste aus Elementen, die auf dem Displayangezeigt werden sollen.                                                                                                                                                                                                                   |
+| Datum und Uhrzeit im Header anzeigen          | Blendet auf allen Seiten das Datum und die Uhrzeit ein                                                                                                                                                                                                                             |
+| Buttons zum Umblättern anzeigen               | Blendet die Buttons zum Umblättern am unteren Bildrand ein.                                                                                                                                                                                                                        |
+| Nachricht empfangen Skript                    | Wird aufgerfen wenn ein Button gedrückt oder ein Wert auf dem Display geändert wurde. Diese Funktion dient dazu die Events eigener Objekte auszuwerten, die nicht in den UI-Elementen angelegt wurden. Die Daten können im Script mit der Variable $_IPS['Data'] empfangen werden. |
 
 __Ui-Elemente__:
 
@@ -71,37 +81,37 @@ Beispiel: zwei Elemente mit der Breite 1/2, vier Elemente mit 1/4 oder 2 Element
 #### Objekt 
 Der Objekttyp ist abhängig vom ausgewählten Typ des UI-Elements! 
 
-UI-Element-Typ     | Objekttyp | Beschreibung
--------- | ------------------ | ------------------
-Label | String, Integer, Float  | die Beschriftung kann Variablen nutzen. z.B. 'Temp: %s Grad' 
-Button | Skript  | Das Script wird beim Drücken des Buttons ausgeführt 
-Toggel Button | Boolean  | Der Wert wird sofern vorhanden über eine RequestAction geschaltet. Sofern keine RequestAction verfügbar ist wird die Variable direkt geschaltet. 
-Slider | Integer  | Die Min- und Max-Werte werden über "Parameter überschreiben" gesetzt 
-Dropdown | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
-Arc | Integer  | Das Profil der Variablen muss Assoziationen enthalten 
-LED Inicator | Integer, Boolean | LED Anzeige. Helligkeit wird von 0...255 angeggeben. Bei zuordnung einer boolschen Variable wird zwischen aus und an gewechselt 
-Line Meter | Integer  | Diagramm für Prozentualen Ausschlag. Die Beschriftung kann mit Variablen arbeiten. Z.B. %d W für einen Integer-Wert mit der Einheit Watt.
-Switch | Boolean  | Schalter
-New Page | -  | Erstellt kein Element sonden führt zu einem Seitenumbruch
+| UI-Element-Typ | Objekttyp              | Beschreibung                                                                                                                                     |
+| -------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Label          | String, Integer, Float | die Beschriftung kann Variablen nutzen. z.B. 'Temp: %s Grad', '$$' verwendet die Formatierte Variable                                            |
+| Button         | Skript                 | Das Script wird beim Drücken des Buttons ausgeführt                                                                                              |
+| Toggel Button  | Boolean                | Der Wert wird sofern vorhanden über eine RequestAction geschaltet. Sofern keine RequestAction verfügbar ist wird die Variable direkt geschaltet. |
+| Slider         | Integer                | Die Min- und Max-Werte werden über "Parameter überschreiben" gesetzt                                                                             |
+| Dropdown       | Integer                | Das Profil der Variablen muss Assoziationen enthalten                                                                                            |
+| Arc            | Integer                | Das Profil der Variablen muss Assoziationen enthalten                                                                                            |
+| LED Inicator   | Integer, Boolean       | LED Anzeige. Helligkeit wird von 0...255 angeggeben. Bei zuordnung einer boolschen Variable wird zwischen aus und an gewechselt                  |
+| Line Meter     | Integer                | Diagramm für Prozentualen Ausschlag. Die Beschriftung kann mit Variablen arbeiten. Z.B. %d W für einen Integer-Wert mit der Einheit Watt.        |
+| Switch         | Boolean                | Schalter                                                                                                                                         |
+| New Page       | -                      | Erstellt kein Element sonden führt zu einem Seitenumbruch                                                                                        |
 
 
 __Parameter__:
-Name | Standardwert | Beschreibung
---------  | ------------------| ------------------
-DisplayHeight | 480| Höhe des Displays in Pixeln
-DisplayWidth | 480 | Breite des Displays in Pixeln
-DisplayMarginTop | 0 | Oberer Rand für eigene Header-Leiste
-DisplayMarginBottom | 0 | Unterer Rand für eigene Footer-Leiste
-MarginSide | 10 | Rand seitlich der UI-Elemente und zwischen den Elementen
-ButtonHeight | 60 | Standardhöhe der Buttons
-LabelHeight | 40 | Standardhöhe der Label 
-SliderHeight | 30 | Standardhöhe der Slider 
-SliderMargin | 10 | Zusätzlicher Rand unterhalb und oberhalb des Sliders um diesen mittig an andere Elemente anzupassen.
-ArcHeight | 100 | Höhe und Breite des Arc (Bogendiagramm)
-LedHeight | 40 | Höhe und Breite der LED Anzeige
-LedMinValue | 50 | Helligkeit der LED für den Zustand aus bei einer Boolschen Variable
-LineMeterHeight | 50 | Standardhöhe des Line Meter
-SwitchHeight | 50 | Standardhöhe des Schalters 
+| Name                | Standardwert | Beschreibung                                                                                         |
+| ------------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
+| DisplayHeight       | 480          | Höhe des Displays in Pixeln                                                                          |
+| DisplayWidth        | 480          | Breite des Displays in Pixeln                                                                        |
+| DisplayMarginTop    | 0            | Oberer Rand für eigene Header-Leiste                                                                 |
+| DisplayMarginBottom | 0            | Unterer Rand für eigene Footer-Leiste                                                                |
+| MarginSide          | 10           | Rand seitlich der UI-Elemente und zwischen den Elementen                                             |
+| ButtonHeight        | 60           | Standardhöhe der Buttons                                                                             |
+| LabelHeight         | 40           | Standardhöhe der Label                                                                               |
+| SliderHeight        | 30           | Standardhöhe der Slider                                                                              |
+| SliderMargin        | 10           | Zusätzlicher Rand unterhalb und oberhalb des Sliders um diesen mittig an andere Elemente anzupassen. |
+| ArcHeight           | 100          | Höhe und Breite des Arc (Bogendiagramm)                                                              |
+| LedHeight           | 40           | Höhe und Breite der LED Anzeige                                                                      |
+| LedMinValue         | 50           | Helligkeit der LED für den Zustand aus bei einer Boolschen Variable                                  |
+| LineMeterHeight     | 50           | Standardhöhe des Line Meter                                                                          |
+| SwitchHeight        | 50           | Standardhöhe des Schalters                                                                           |
 
 
 ### 5. Statusvariablen und Profile
@@ -110,21 +120,21 @@ Die Statusvariablen/Kategorien werden automatisch angelegt.
 
 #### Statusvariablen
 
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-Leerlauf | Integer | Zeigt den Leerlaufzustand (Idle) an 
-Hintergrundbeleuchtung |Integer | Wert der Hintergrundbeleuchtung (Kann geschaltet werden)
-Seite  |Integer | Aktuell aufgerufenen Seite (Kann geschaltet werden)
-Online| Boolean | Online Status
+| Name                   | Typ     | Beschreibung                                             |
+| ---------------------- | ------- | -------------------------------------------------------- |
+| Leerlauf               | Integer | Zeigt den Leerlaufzustand (Idle) an                      |
+| Hintergrundbeleuchtung | Integer | Wert der Hintergrundbeleuchtung (Kann geschaltet werden) |
+| Seite                  | Integer | Aktuell aufgerufenen Seite (Kann geschaltet werden)      |
+| Online                 | Boolean | Online Status                                            |
 
 
 #### Profile
 
-Name   | Typ
------- | -------
-OpenHASP.Idle  | Integer
-OpenHASP.BtnEvent | Integer
-OpenHASP.Online | Boolean
+| Name              | Typ     |
+| ----------------- | ------- |
+| OpenHASP.Idle     | Integer |
+| OpenHASP.BtnEvent | Integer |
+| OpenHASP.Online   | Boolean |
 
 ### 6. WebFront
 
