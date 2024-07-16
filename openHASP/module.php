@@ -169,7 +169,7 @@ class openHASP extends IPSModule
         $data = json_decode(file_get_contents(__DIR__ . "/form.json"), false);
         $UiElements = $this->ReadPropertyString("UiElements");
 
-        $this->SendDebug('GetConfigurationForm()', 'UI-Elements:'. $UiElements, 0);
+        $this->SendDebug(__FUNCTION__, 'UI-Elements:'. $UiElements, 0);
 
         //Only add default element if we do not have anything in persistence
         /*
@@ -199,7 +199,7 @@ class openHASP extends IPSModule
         $Parameter = json_decode($this->ReadPropertyString("Parameter"));
         $found_key = array_search($parametername, array_column($Parameter, 'Name'));
         $Value = $Parameter[$found_key]->Value;
-        $this->SendDebug('GetParameter()', $Parameter[$found_key]->Name .' => ' . $Value, 0);
+        $this->SendDebug(__FUNCTION__, $Parameter[$found_key]->Name .' => ' . $Value, 0);
         return $Value;
 
     }
@@ -220,7 +220,7 @@ class openHASP extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
-        $this->SendDebug('RequestAction()', 'Ident: '.$Ident.' Value: '.$Value, 0);
+        $this->SendDebug(__FUNCTION__, 'Ident: '.$Ident.' Value: '.$Value, 0);
         switch($Ident) {
             case "Backlight":
                 $this->SendCommand('backlight='.$Value);
@@ -250,7 +250,7 @@ class openHASP extends IPSModule
 
         $receivedtopic = $receiveddata->Topic;
         $data = $receiveddata->Payload;
-        $this->SendDebug('ReceiveData()', 'Received Topic: '.$receivedtopic . ' Data: '.$data, 0);
+        $this->SendDebug(__FUNCTION__, 'Received Topic: '.$receivedtopic . ' Data: '.$data, 0);
 
         $expectedprefix = "hasp/" . $this->ReadPropertyString('Hostname') .'/LWT';
         if(stripos($receivedtopic, $expectedprefix) !== false) { // Prüfen ob Topic mit dem Prefix des Gerätes beginnt
@@ -261,13 +261,13 @@ class openHASP extends IPSModule
         $expectedprefix = "hasp/" . $this->ReadPropertyString('Hostname') .'/state/';
 
         if(stripos($receivedtopic, $expectedprefix) === false) { // Prüfen ob Topic mit dem Prefix des Gerätes beginnt
-            $this->SendDebug('ReceiveData()', 'Topic does not match', 0);
+            $this->SendDebug(__FUNCTION__, 'Topic does not match', 0);
             return; // Abbrechen wenn das Topic nicht passt.
         }
         $topic = substr($receivedtopic, strlen($expectedprefix)); //Prefix des Topics abschneiden
 
 
-        $this->SendDebug('ReceiveData()', 'Topic: '.$topic . ' Data: '.$data, 0);
+        $this->SendDebug(__FUNCTION__, 'Topic: '.$topic . ' Data: '.$data, 0);
 
         $this->HandleData($topic, $data);
 
@@ -321,11 +321,11 @@ class openHASP extends IPSModule
         if(preg_match('/p\d{1,2}b\d{1,3}/', $topic)) {
 
             $found_key = array_search($topic, array_column($ElementToObjectMapping, 'objkey'));
-            $this->SendDebug('FoundMapping()', $found_key, 0);
+            $this->SendDebug(__FUNCTION__.' FoundKey', $found_key, 0);
             $Element = null;
             if($found_key != false) {
                 $Element = $ElementToObjectMapping[$found_key]->data;
-                $this->SendDebug('FoundMapping()', json_encode($Element), 0);
+                $this->SendDebug(__FUNCTION__. ' FoundMapping', json_encode($Element), 0);
             }
 
             $data = json_decode($data);
@@ -359,7 +359,7 @@ class openHASP extends IPSModule
                 && $data->event == 'down') { // Wenn Typ=Button und Button gedrückt
                     if($Element->objectId != 1) {
                         IPS_RunScript($Element->objectId);
-                        $this->SendDebug('IPS_RunScript()', $Element->objectId, 0);
+                        $this->SendDebug(__FUNCTION__. ' => IPS_RunScript()', $Element->objectId, 0);
                     }
                 }
 
@@ -377,10 +377,10 @@ class openHASP extends IPSModule
                     if($Element->objectId != 1) {
                         if(HasAction($Element->objectId)) {
                             RequestAction($Element->objectId, $data->val);
-                            $this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$data->val, 0);
+                            $this->SendDebug(__FUNCTION__. ' => RequestAction()', $Element->objectId . " Value: ".$data->val, 0);
                         } else {
                             SetValue($Element->objectId, $data->val);
-                            $this->SendDebug('SetValue()', $Element->objectId . " Value: ".$data->val, 0);
+                            $this->SendDebug(__FUNCTION__. ' => SetValue()', $Element->objectId . " Value: ".$data->val, 0);
                         }
                     }
                 }
@@ -395,10 +395,10 @@ class openHASP extends IPSModule
 
                         if(HasAction($Element->objectId)) {
                             RequestAction($Element->objectId, $value);
-                            $this->SendDebug('RequestAction()', $Element->objectId . " Value: ".$value, 0);
+                            $this->SendDebug(__FUNCTION__. ' => RequestAction()', $Element->objectId . " Value: ".$value, 0);
                         } else {
                             SetValue($Element->objectId, $value);
-                            $this->SendDebug('SetValue()', $Element->objectId . " Value: ".$value, 0);
+                            $this->SendDebug(__FUNCTION__. ' => SetValue()', $Element->objectId . " Value: ".$value, 0);
                         }
                     }
                 }
@@ -448,14 +448,14 @@ class openHASP extends IPSModule
             $ElementToObjectMapping = json_decode($this->ReadAttributeString("ElementToObjectMapping"));
             $elementsData = array_column($ElementToObjectMapping, 'data');
 
-            $this->SendDebug("elementData", json_encode($elementsData), 0);
+            $this->SendDebug(__FUNCTION__. ' => elementData', json_encode($elementsData), 0);
 
             foreach ($elementsData as $Element) { // alle UI-Elemente durchlaufen
                 if($Element->objectId != $sendId) {
                     continue;
                 }
 
-                $this->SendDebug('FoundMapping()', json_encode($Element), 0);
+                $this->SendDebug(__FUNCTION__. ' => FoundMapping()', json_encode($Element), 0);
 
                 if($Element->type == 2 || $Element->type == 3 || $Element->type == 5) { // Bei Toggel-Button, Slider, Arc, LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
@@ -475,22 +475,22 @@ class openHASP extends IPSModule
                 }
                 if($Element->type == 0) { //Bei Label
                     if($Element->caption == "") {
-                        $this->SetItemText($Element->page, $Element->id, strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
+                        $this->SetItemText($Element->page, $Element->id, $this->EncodeText(strval($data[0]))); // Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
                         if(str_contains($Element->caption, "$$")) {
-                            $this->SetItemText($Element->page, $Element->id, str_replace("$$", GetValueFormatted($sendId), $Element->caption)); // $$ verwendet den Formatierten Variablenwert
+                            $this->SetItemText($Element->page, $Element->id, $this->EncodeText(str_replace("$$", GetValueFormatted($sendId), $Element->caption))); // $$ verwendet den Formatierten Variablenwert
 
                         } else {
-                            $this->SetItemText($Element->page, $Element->id, sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                            $this->SetItemText($Element->page, $Element->id, $this->EncodeText(sprintf($Element->caption, ($data[0])))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
                         }
                     }
                 }
                 if($Element->type == 7) { //Bei LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                     if($Element->caption == "") {
-                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.strval($data[0])); // Bei Leerer Caption wird der Wert direkt geschrieben.
+                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.$this->EncodeText(strval($data[0]))); // Bei Leerer Caption wird der Wert direkt geschrieben.
                     } else {
-                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.sprintf($Element->caption, ($data[0]))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
+                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.$this->EncodeText(sprintf($Element->caption, ($data[0])))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
                     }
                 }
                 if($Element->type == 4) { //  Bei Dropdown
@@ -513,13 +513,13 @@ class openHASP extends IPSModule
 
     private function Online()
     {
-        $this->SendDebug('Online()', 'Gerät ist Online', 0);
+        $this->SendDebug(__FUNCTION__, 'Gerät ist Online', 0);
         $this->RewriteDisplay();
     }
 
     public function RewriteDisplay()
     {
-        $this->SendDebug('RewriteDisplay()', '', 0);
+        $this->SendDebug(__FUNCTION__, '', 0);
         $items = array();
 
         if($this->ReadPropertyBoolean('WriteDisplayContent')) {
@@ -617,7 +617,7 @@ class openHASP extends IPSModule
 
             foreach ($UiElements as &$element) {
 
-                $this->SendDebug('RewriteDisplay()', 'Caption: '.print_r($element, true), 0);
+                $this->SendDebug(__FUNCTION__, 'Caption: '.print_r($element, true), 0);
 
 
                 switch($element['Width']) {
@@ -659,7 +659,7 @@ class openHASP extends IPSModule
                 try {
                     $override = json_decode($element['OverrideParameter'], true);
                 } catch (Exception $e) {
-                    $this->SendDebug('RewriteDisplay() Fehler', 'Element: ' .$itemcount .' Fehler in OverrideParameter: '.$element['OverrideParameter'], 0);
+                    $this->SendDebug(__FUNCTION__.' => Fehler', 'Element: ' .$itemcount .' Fehler in OverrideParameter: '.$element['OverrideParameter'], 0);
                 }
                 if ($override == null) {
                     $override = array();
@@ -929,12 +929,23 @@ class openHASP extends IPSModule
         }
 
 
-        $this->SendDebug('SendCommand()', 'ElementToObjectMapping: '.json_encode($items), 0);
+        $this->SendDebug(__FUNCTION__, 'ElementToObjectMapping: '.json_encode($items), 0);
         $this->WriteAttributeString("ElementToObjectMapping", json_encode($items));
     }
     private function AddJsonL(array $data)
     {
         $this->SendCommand('jsonl '.json_encode($data, JSON_UNESCAPED_SLASHES));
+    }
+
+    private function EncodeText($text)
+    {
+        // JSON-Encode umwandelt Sonderzeichen in Unicode-Sequenzen
+        $encoded = json_encode($text);
+        // Entferne die umschließenden Anführungszeichen, die von json_encode hinzugefügt werden
+        $encoded = substr($encoded, 1, -1);
+        // Ersetze doppelte Backslashes mit einfachen Backslashes
+        $encoded = str_replace('\\\\', '\\', $encoded);
+        return $encoded;
     }
 
     public function SetItemValue(int $page, int $objectId, int $value)
@@ -950,7 +961,7 @@ class openHASP extends IPSModule
     public function SendCommand(string $command)
     {
         $MQTTTopic = "hasp/" .$this->ReadPropertyString('Hostname').'/command/';
-        $this->SendDebug('SendCommand()', 'Topic: '.$MQTTTopic.' Command: '.$command, 0);
+        $this->SendDebug(__FUNCTION__, 'Topic: '.$MQTTTopic.' Command: '.$command, 0);
 
         $this->SendMQTT($MQTTTopic, $command);
     }
@@ -994,7 +1005,7 @@ class openHASP extends IPSModule
     }
     private function RegisterVariableProfiles()
     {
-        $this->SendDebug('RegisterVariableProfiles()', 'RegisterVariableProfiles()', 0);
+        $this->SendDebug(__FUNCTION__, 'RegisterVariableProfiles()', 0);
 
 
         if (!IPS_VariableProfileExists('OpenHASP.Idle')) {
