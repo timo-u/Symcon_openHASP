@@ -24,6 +24,7 @@ class openHASP extends IPSModule
         $this->RegisterPropertyBoolean('DisplayPageControlFooter', true);
 
         $this->RegisterPropertyInteger('MessageReceivedScript', 1);
+        $this->RegisterPropertyInteger('WriteContentScript', 1);
 
         $this->RegisterAttributeString("ElementToObjectMapping", "{}");
 
@@ -171,18 +172,6 @@ class openHASP extends IPSModule
 
         $this->SendDebug(__FUNCTION__, 'UI-Elements:'. $UiElements, 0);
 
-        //Only add default element if we do not have anything in persistence
-        /*
-       if($UiElements == "" || $UiElements == "[]") {
-            $data->elements[1]->elements[0]->values[] = array(
-                "Type" => 0,
-                "Caption" => "#32C9AC Symcon",
-                "OverrideParameter" => '{"text_font":50,"h":60}',
-                "Margin" => 30,
-                "Object" => 1
-            );
-        }
-*/
         return json_encode($data);
 
     }
@@ -928,6 +917,10 @@ class openHASP extends IPSModule
 
         }
 
+        $scriptid = $this->ReadPropertyInteger("WriteContentScript");
+        if($scriptid > 1) {
+            IPS_RunScript($scriptid);
+        }
 
         $this->SendDebug(__FUNCTION__, 'ElementToObjectMapping: '.json_encode($items), 0);
         $this->WriteAttributeString("ElementToObjectMapping", json_encode($items));
@@ -956,6 +949,10 @@ class openHASP extends IPSModule
     public function SetItemText(int $page, int $objectId, string $value)
     {
         $this->SendCommand('["'.'p'.$page.'b'.$objectId.'.text='.$value.'"]');
+    }
+    public function AddObject(string $text)
+    {
+        $this->SendCommand('jsonl '.$text);
     }
 
     public function SendCommand(string $command)

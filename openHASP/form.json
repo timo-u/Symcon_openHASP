@@ -160,6 +160,15 @@
                                 "type": "SelectObject"
                             }
                         }
+                    ],
+                    "values": [
+                        {
+                            "Type": 0,
+                            "Caption": "#32C9AC Symcon",
+                            "OverrideParameter": "{\"text_font\":50,\"h\":60}",
+                            "Margin": 30,
+                            "Object": 1
+                        }
                     ]
                 },
                 {
@@ -307,6 +316,10 @@
                                     {
                                         "caption": "Integer Value (val)",
                                         "value": 3
+                                    },
+                                    {
+                                        "caption": "Integer Value (val & value_str)",
+                                        "value": 7
                                     }
                                 ]
                             }
@@ -392,6 +405,11 @@
                     "type": "SelectScript",
                     "name": "MessageReceivedScript",
                     "caption": "Message received Script"
+                },
+                {
+                    "type": "SelectScript",
+                    "name": "WriteContentScript",
+                    "caption": "Write Display Content Script"
                 }
             ]
         },
