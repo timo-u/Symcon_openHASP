@@ -477,10 +477,10 @@ class openHASP extends IPSModule
                 if($Element->type == 7) { //Bei LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                     if($Element->caption == "") {
-                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.$this->EncodeText(strval($data[0]))); // Bei Leerer Caption wird der Wert direkt geschrieben.
-                    } else {
-                        $this->SendCommand('p'.$Element->page.'b'.$Element->id.'.value_str='.$this->EncodeText(sprintf($Element->caption, ($data[0])))); // sprintf %s bei String, %d bei Integer %f bei Float, %% um ein "%" zu schreiben
-                    }
+						$this->SetValueStr($Element->page, $Element->id,$this->EncodeText(strval($data[0])));
+					} else {
+                       $this->SetValueStr($Element->page, $Element->id,$this->EncodeText(sprintf($Element->caption, ($data[0])))); //
+					}
                 }
                 if($Element->type == 4) { //  Bei Dropdown
                     $var = IPS_GetVariable($sendId);
@@ -510,7 +510,6 @@ class openHASP extends IPSModule
     {
         $this->SendDebug(__FUNCTION__, '', 0);
         $items = array();
-
         if($this->ReadPropertyBoolean('WriteDisplayContent')) {
 
             $displayheight = $this->GetParameter("DisplayHeight");
@@ -949,6 +948,11 @@ class openHASP extends IPSModule
     public function SetItemText(int $page, int $objectId, string $value)
     {
         $this->SendCommand('["'.'p'.$page.'b'.$objectId.'.text='.$value.'"]');
+    }
+	
+	public function SetValueStr(int $page, int $objectId, string $value)
+    {
+        $this->SendCommand('["'.'p'.$page.'b'.$objectId.'.value_str='.$value.'"]');
     }
     public function AddObject(string $text)
     {
