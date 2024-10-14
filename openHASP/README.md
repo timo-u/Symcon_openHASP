@@ -28,7 +28,7 @@ Die Instanz openHASP verbidet sich mit einem openHASP Display via MQTT.
 ### 2. Voraussetzungen
 
 - IP-Symcon ab Version 6.0
-- openHASP-Display (V 7.0) [openHASP](https://openhasp.com/)
+- openHASP-Display (V 0.7) [openHASP](https://openhasp.com/)
 
 ### 3. Software-Installation
 
