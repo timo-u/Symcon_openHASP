@@ -876,7 +876,7 @@ class openHASP extends IPSModule
                                         'w' => $elementWidth
                                         );
                     if($element['Object'] != 1) {
-                        $array['val'] = GetValue($element['Object']);
+                        $array['val'] = intval(GetValue($element['Object']));
                     }
                     $this->AddJsonL(array_merge($array, $override));
                 }
