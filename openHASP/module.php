@@ -446,7 +446,7 @@ class openHASP extends IPSModule
 
                 $this->SendDebug(__FUNCTION__. ' => FoundMapping()', json_encode($Element), 0);
 
-                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5) { // Bei Toggel-Button, Slider, Arc, LineMeter
+                if($Element->type == 2 || $Element->type == 3 || $Element->type == 5 || $Element->type == 8) { // Bei Toggel-Button, Slider, Arc, LineMeter
                     $this->SetItemValue($Element->page, $Element->id, intval($data[0]));
                 }
                 if($Element->type == 6) { // Bei LED Indicator
